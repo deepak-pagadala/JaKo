@@ -51,17 +51,29 @@ function update() {
 }
 
 function fetchAllWords() {
+    console.log('Fetching all words...');
     fetch(`/get_all_words/${language}/${category}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
             const words = Object.keys(data).length; // Number of words fetched
             console.log('Total words in this category:', words); // Log total words to the console
             totalWords = words; // Assign to totalWords variable
             fetchWord();
-        });
+        })
+        .catch(error => console.error('Error fetching all words:', error));
 }
 
 function fetchWord() {
+    console.log('Fetching a word...');
     if (repeatWordCounter >= 2 && incorrectWords.length > 0) {
         // Reintroduce an incorrect word
         const wordData = incorrectWords.shift();
@@ -76,8 +88,17 @@ function fetchWord() {
         repeatWordCounter = 0;
     } else {
         fetch(`/get_word/${language}/${category}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
+                if (data.error) {
+                    console.error('Error:', data.error);
+                    return;
+                }
                 if (data.japanese && data.english) {
                     if (correctWords.includes(data.english)) {
                         fetchWord(); // Fetch another word if this one has been answered correctly before
@@ -93,12 +114,14 @@ function fetchWord() {
                         console.log('Fetched word:', data.japanese);
                     }
                 }
-            });
+            })
+            .catch(error => console.error('Error fetching word:', error));
         repeatWordCounter++;
     }
 }
 
 function displayOptions(options, correctAnswer) {
+    console.log('Displaying options:', options);
     const optionsContainer = document.getElementById('options-container');
     optionsContainer.innerHTML = '';
     options.forEach(option => {
