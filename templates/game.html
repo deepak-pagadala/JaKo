@@ -19,7 +19,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Learning {{ category|capitalize }} in {{ language|capitalize }}</h1>
+        <h1>Learning {{ category|replace('%20', ' ')|capitalize }} in {{ language|capitalize }}</h1>
         <div id="game-container"></div>
         <div id="score-board">
             <p style="color: white;">Score: <span id="score">0</span></p>
