@@ -32,22 +32,23 @@ def category(language):
 def game(language, category):
     return render_template('game.html', language=language, category=category)
 
-@app.route('/get_all_words/<language>/<category>', methods=['GET'])
-def get_all_words(language, category):
-    vocab = vocab_data.get(language, {}).get(category, {})
-    return jsonify(vocab)
-
-@app.route('/get_word/<language>/<category>', methods=['GET'])
+@app.route('/get_word/<language>/<category>')
 def get_word(language, category):
-    vocab = vocab_data.get(language, {}).get(category, {})
-    if vocab:
-        words = list(vocab.items())
-        japanese, english = random.choice(words)
-        incorrect_options = random.sample([v for k, v in words if v != english], 3)
-        options = incorrect_options + [english]
-        random.shuffle(options)
-        return jsonify({'japanese': japanese, 'english': english, 'options': options})
-    return jsonify({})
+    # Implement logic to fetch a word from JSON files
+    with open(f'vocabularies/{language}.json', encoding='utf-8') as f:
+        data = json.load(f)
+        words = data.get(category, {})
+        # Choose a word at random or implement logic to select the word
+        word = random.choice(list(words.items()))
+        return jsonify(word)
+
+@app.route('/get_all_words/<language>/<category>')
+def get_all_words(language, category):
+    # Implement logic to fetch all words from JSON files
+    with open(f'vocabularies/{language}.json', encoding='utf-8') as f:
+        data = json.load(f)
+        words = data.get(category, {})
+        return jsonify(words)
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=os.getenv('PORT', 5000))
