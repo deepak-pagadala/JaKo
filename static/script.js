@@ -54,8 +54,17 @@ function update() {
 function fetchAllWords() {
     console.log('Fetching all words...');
     fetch(`/get_all_words/${language}/${category}`)
-        .then(response => response.json())
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`Network response was not ok: ${response.statusText}`);
+            }
+            return response.json();
+        })
         .then(data => {
+            if (data.error) {
+                console.error('Error:', data.error);
+                return;
+            }
             const words = Object.keys(data).length; // Number of words fetched
             console.log('Total words in this category:', words); // Log total words to the console
             totalWords = words; // Assign to totalWords variable
@@ -81,7 +90,12 @@ function fetchWord() {
         repeatWordCounter = 0;
     } else {
         fetch(`/get_word/${language}/${category}`)
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`Network response was not ok: ${response.statusText}`);
+                }
+                return response.json();
+            })
             .then(data => {
                 console.log('Fetched word data:', data);
                 if (data.japanese && data.english) {
