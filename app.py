@@ -35,6 +35,8 @@ def game(language, category):
 @app.route('/get_all_words/<language>/<category>', methods=['GET'])
 def get_all_words(language, category):
     vocab = vocab_data.get(language, {}).get(category, {})
+    if not vocab:
+        return jsonify({"error": "No words found for this category"}), 404
     return jsonify(vocab)
 
 @app.route('/get_word/<language>/<category>', methods=['GET'])
