@@ -49,7 +49,7 @@ def get_word(language, category):
         options = incorrect_options + [english]
         random.shuffle(options)
         return jsonify({'japanese': japanese, 'english': english, 'options': options})
-    return jsonify({})
+    return jsonify({"error": "No words found for this category"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
