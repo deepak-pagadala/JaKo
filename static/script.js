@@ -38,7 +38,6 @@ function update() {
     if (fallingWord) {
         fallingWord.y += wordSpeed; // Speed of the falling word
         if (fallingWord.y > 400) { // Height of the game area
-            console.log('Word fell out of the game area');
             lives--;
             document.getElementById('lives').textContent = lives;
             if (lives <= 0) {
@@ -52,32 +51,19 @@ function update() {
 }
 
 function fetchAllWords() {
-    console.log('Fetching all words...');
     fetch(`/get_all_words/${language}/${category}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.statusText}`);
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            if (data.error) {
-                console.error('Error:', data.error);
-                return;
-            }
             const words = Object.keys(data).length; // Number of words fetched
             console.log('Total words in this category:', words); // Log total words to the console
             totalWords = words; // Assign to totalWords variable
             fetchWord();
-        })
-        .catch(error => console.error('Error fetching all words:', error));
+        });
 }
 
 function fetchWord() {
-    console.log('Fetching a word...');
     if (repeatWordCounter >= 2 && incorrectWords.length > 0) {
         // Reintroduce an incorrect word
-        console.log('Reintroducing an incorrect word');
         const wordData = incorrectWords.shift();
         currentWord = wordData.english;
         if (fallingWord) {
@@ -90,14 +76,8 @@ function fetchWord() {
         repeatWordCounter = 0;
     } else {
         fetch(`/get_word/${language}/${category}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                console.log('Fetched word data:', data);
                 if (data.japanese && data.english) {
                     if (correctWords.includes(data.english)) {
                         fetchWord(); // Fetch another word if this one has been answered correctly before
@@ -113,14 +93,12 @@ function fetchWord() {
                         console.log('Fetched word:', data.japanese);
                     }
                 }
-            })
-            .catch(error => console.error('Error fetching word:', error));
+            });
         repeatWordCounter++;
     }
 }
 
 function displayOptions(options, correctAnswer) {
-    console.log('Displaying options:', options);
     const optionsContainer = document.getElementById('options-container');
     optionsContainer.innerHTML = '';
     options.forEach(option => {
@@ -133,7 +111,6 @@ function displayOptions(options, correctAnswer) {
 }
 
 function checkAnswer(selected, correct, btn) {
-    console.log('Checking answer:', selected, correct);
     if (selected === correct) {
         btn.classList.add('correct');
         score++;
@@ -165,7 +142,6 @@ function getCurrentOptions() {
 }
 
 function speakWord(word) {
-    console.log('Speaking word:', word);
     const utterance = new SpeechSynthesisUtterance(word);
     utterance.lang = language === 'japanese' ? 'ja-JP' : 'ko-KR';
     window.speechSynthesis.speak(utterance);
@@ -181,11 +157,10 @@ function showRepeatLabel(isRepeat) {
 }
 
 function showCongratsMessage() {
-    console.log('Showing congratulations message');
     if (fallingWord) {
         fallingWord.destroy();
     }
-    game.scene.scenes[0].add.text(300, 200, `Congrats! You have learned ${category.replace('%20', ' ')}!`, { font: '32px Arial', fill: '#000' }).setOrigin(0.5);
+    game.scene.scenes[0].add.text(300, 200, `Congrats! You have learned ${category}!`, { font: '32px Arial', fill: '#000' }).setOrigin(0.5);
     setTimeout(() => {
         resetGame();
         window.location.href = `/category/${language}`;
@@ -193,7 +168,6 @@ function showCongratsMessage() {
 }
 
 function resetGame() {
-    console.log('Resetting game');
     score = 0;
     lives = 5;
     wordSpeed = 1.0; // Reset speed
@@ -208,6 +182,5 @@ function resetGame() {
 document.getElementById('reset-btn').addEventListener('click', resetGame);
 
 window.onload = () => {
-    console.log('Window loaded, starting game...');
     fetchWord();
 };
