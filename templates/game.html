@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Game - Learn {{ language|capitalize }} Vocabulary</title>
+    <link rel="stylesheet" href="/static/styles.css">
+    <style>
+        #repeat-label {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            background-color: yellow;
+            padding: 5px;
+            display: none;
+            z-index: 10; /* Ensure it stays on top */
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Learning {{ category|capitalize }} in {{ language|capitalize }}</h1>
+        <div id="game-container"></div>
+        <div id="score-board">
+            <p style="color: white;">Score: <span id="score">0</span></p>
+            <p style="color: white;">Lives: <span id="lives">5</span></p>
+        </div>
+        <div id="repeat-label">Repeat Word</div>
+        <div id="options-container"></div>
+        <button id="reset-btn" class="btn">Reset</button>
+        <a href="/category/{{ language }}" class="btn">Return to Categories</a>
+        <a href="/language" class="btn">Return to Language Selection</a>
+    </div>
+    <script>
+        const language = "{{ language }}";
+        const category = "{{ category }}";
+    </script>
+    <script src="/static/phaser.min.js"></script>
+    <script src="/static/script.js"></script>
+</body>
+</html>
