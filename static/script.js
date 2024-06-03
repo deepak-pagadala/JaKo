@@ -160,7 +160,7 @@ function showCongratsMessage() {
     if (fallingWord) {
         fallingWord.destroy();
     }
-    game.scene.scenes[0].add.text(300, 200, `Congrats! You have learned ${category}!`, { font: '32px Arial', fill: '#000' }).setOrigin(0.5);
+    game.scene.scenes[0].add.text(300, 200, `Congrats! You have learned ${category.replace('%20', ' ')}!`, { font: '32px Arial', fill: '#000' }).setOrigin(0.5);
     setTimeout(() => {
         resetGame();
         window.location.href = `/category/${language}`;
