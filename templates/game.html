@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Learning {{ category|capitalize }} in {{ language|capitalize }}</title>
+    <title>Game - Learn {{ language|capitalize }} Vocabulary</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
@@ -14,7 +14,7 @@
         </div>
         <div id="score-board">
             <p>Score: <span id="score">0</span></p>
-            <p>Lives: <span id="lives">5</span></p>
+            <p>Lives: <span id="lives">10</span></p>
         </div>
         <div id="input-container">
             <input type="text" id="answer-input" placeholder="Type your answer here" autofocus>
@@ -26,7 +26,7 @@
     </div>
     <script>
         const language = "{{ language }}";
-        const category = decodeURIComponent("{{ category|urlencode }}");
+        const category = "{{ category }}";
     </script>
     <script src="/static/phaser.min.js"></script>
     <script src="/static/script.js"></script>
