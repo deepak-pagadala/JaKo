@@ -5,28 +5,21 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game - Learn {{ language|capitalize }} Vocabulary</title>
     <link rel="stylesheet" href="/static/styles.css">
-    <style>
-        #repeat-label {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            background-color: yellow;
-            padding: 5px;
-            display: none;
-            z-index: 10; /* Ensure it stays on top */
-        }
-    </style>
 </head>
 <body>
     <div class="container">
-        <h1>Learning {{ category|replace('%20', ' ')|capitalize }} in {{ language|capitalize }}</h1>
-        <div id="game-container"></div>
-        <div id="score-board">
-            <p style="color: white;">Score: <span id="score">0</span></p>
-            <p style="color: white;">Lives: <span id="lives">5</span></p>
+        <h1>Learning {{ category|capitalize }} in {{ language|capitalize }}</h1>
+        <div id="game-container" style="position: relative;">
+            <div id="repeat-label" style="display: none; position: absolute; top: 10px; right: 10px; background-color: yellow; padding: 5px;">Repeat Word</div>
         </div>
-        <div id="repeat-label">Repeat Word</div>
-        <div id="options-container"></div>
+        <div id="score-board">
+            <p>Score: <span id="score">0</span></p>
+            <p>Lives: <span id="lives">10</span></p>
+        </div>
+        <div id="input-container">
+            <input type="text" id="answer-input" placeholder="Type your answer here" autofocus>
+            <button id="submit-btn" class="btn">Submit</button>
+        </div>
         <button id="reset-btn" class="btn">Reset</button>
         <a href="/category/{{ language }}" class="btn">Return to Categories</a>
         <a href="/language" class="btn">Return to Language Selection</a>
