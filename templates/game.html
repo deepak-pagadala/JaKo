@@ -26,7 +26,7 @@
     </div>
     <script>
         const language = "{{ language }}";
-        const category = "{{ category }}";
+        const category = decodeURIComponent("{{ category|urlencode }}");
     </script>
     <script src="/static/phaser.min.js"></script>
     <script src="/static/script.js"></script>
