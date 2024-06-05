@@ -1,5 +1,5 @@
 let score = 0;
-let lives = 10;
+let lives = 5;
 let currentWord = "";
 let currentJapaneseWord = "";
 let wordText;
@@ -7,7 +7,7 @@ let fallingWord;
 let correctWords = [];
 let incorrectWords = [];
 let totalWords = 0;
-let wordSpeed = 0.5; // Initial falling speed
+let wordSpeed = 1.0; // Initial falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 
@@ -113,11 +113,11 @@ function checkAnswer() {
         score++;
         document.getElementById('score').textContent = score;
         correctWords.push(currentWord);
-        wordSpeed *= 1.05; // Increase speed by 10%
+        wordSpeed *= 1.1; // Increase speed by 10%
         if (correctWords.length === totalWords) {
             showCongratsMessage();
         } else {
-            setTimeout(fetchWord, 500); // Fetch next word after a short delay
+            setTimeout(fetchWord, 1000); // Fetch next word after a short delay
         }
     } else {
         input.classList.add('incorrect');
@@ -189,8 +189,8 @@ function showCongratsMessage() {
 
 function resetGame() {
     score = 0;
-    lives = 10;
-    wordSpeed = 0.5; // Reset speed
+    lives = 5;
+    wordSpeed = 1.0; // Reset speed
     correctWords = [];
     incorrectWords = [];
     repeatWordCounter = 0;
