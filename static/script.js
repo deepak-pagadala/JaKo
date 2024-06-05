@@ -1,13 +1,15 @@
 let score = 0;
-let lives = 5;
+let lives = 10;
 let currentWord = "";
+let currentJapaneseWord = "";
 let wordText;
 let fallingWord;
 let correctWords = [];
 let incorrectWords = [];
 let totalWords = 0;
-let wordSpeed = 1.0; // Initial falling speed
+let wordSpeed = 0.5; // Initial falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
+let isPaused = false;
 
 const config = {
     type: Phaser.AUTO,
@@ -35,7 +37,7 @@ function create() {
 }
 
 function update() {
-    if (fallingWord) {
+    if (!isPaused && fallingWord) {
         fallingWord.y += wordSpeed; // Speed of the falling word
         if (fallingWord.y > 400) { // Height of the game area
             lives--;
@@ -44,124 +46,119 @@ function update() {
                 alert("Game Over!");
                 resetGame();
             } else {
-                fetchWord();
+                showCorrectAnswer();
             }
         }
     }
 }
 
 function fetchAllWords() {
-    console.log('Fetching all words...');
     fetch(`/get_all_words/${language}/${category}`)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error(`Network response was not ok: ${response.statusText}`);
-            }
-            return response.json();
-        })
+        .then(response => response.json())
         .then(data => {
-            if (data.error) {
-                console.error('Error:', data.error);
-                return;
-            }
             const words = Object.keys(data).length; // Number of words fetched
             console.log('Total words in this category:', words); // Log total words to the console
             totalWords = words; // Assign to totalWords variable
             fetchWord();
-        })
-        .catch(error => console.error('Error fetching all words:', error));
+        });
 }
 
 function fetchWord() {
-    console.log('Fetching a word...');
     if (repeatWordCounter >= 2 && incorrectWords.length > 0) {
         // Reintroduce an incorrect word
         const wordData = incorrectWords.shift();
         currentWord = wordData.english;
+        currentJapaneseWord = wordData.japanese;
         if (fallingWord) {
             fallingWord.destroy();
         }
         fallingWord = game.scene.scenes[0].add.text(300, 0, wordData.japanese, { font: '48px Arial', fill: '#000' }).setOrigin(0.5);
-        displayOptions(wordData.options, wordData.english);
         speakWord(wordData.japanese);
         showRepeatLabel(true);
         repeatWordCounter = 0;
     } else {
         fetch(`/get_word/${language}/${category}`)
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error(`Network response was not ok: ${response.statusText}`);
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
-                if (data.error) {
-                    console.error('Error:', data.error);
-                    return;
-                }
                 if (data.japanese && data.english) {
                     if (correctWords.includes(data.english)) {
                         fetchWord(); // Fetch another word if this one has been answered correctly before
                     } else {
                         currentWord = data.english;
+                        currentJapaneseWord = data.japanese;
                         if (fallingWord) {
                             fallingWord.destroy();
                         }
                         fallingWord = game.scene.scenes[0].add.text(300, 0, data.japanese, { font: '48px Arial', fill: '#000' }).setOrigin(0.5);
-                        displayOptions(data.options, data.english);
                         speakWord(data.japanese);
                         showRepeatLabel(false);
                         console.log('Fetched word:', data.japanese);
                     }
                 }
-            })
-            .catch(error => console.error('Error fetching word:', error));
+            });
         repeatWordCounter++;
     }
 }
 
-function displayOptions(options, correctAnswer) {
-    console.log('Displaying options:', options);
-    const optionsContainer = document.getElementById('options-container');
-    optionsContainer.innerHTML = '';
-    options.forEach(option => {
-        const btn = document.createElement('button');
-        btn.className = 'option-btn';
-        btn.textContent = option;
-        btn.onclick = () => checkAnswer(option, correctAnswer, btn);
-        optionsContainer.appendChild(btn);
-    });
+function normalizeText(text) {
+    return text.trim().toLowerCase().replace(/\s+/g, ' ');
 }
 
-function checkAnswer(selected, correct, btn) {
-    if (selected === correct) {
-        btn.classList.add('correct');
+function checkAnswer() {
+    const input = document.getElementById('answer-input');
+    const answer = normalizeText(input.value);
+    const normalizedCurrentWord = normalizeText(currentWord);
+    if (answer === normalizedCurrentWord) {
+        input.classList.add('correct');
         score++;
         document.getElementById('score').textContent = score;
         correctWords.push(currentWord);
-        wordSpeed *= 1.1; // Increase speed by 10%
+        wordSpeed *= 1.05; // Increase speed by 10%
         if (correctWords.length === totalWords) {
             showCongratsMessage();
         } else {
-            setTimeout(fetchWord, 1000); // Fetch next word after a short delay
+            setTimeout(fetchWord, 500); // Fetch next word after a short delay
         }
     } else {
-        btn.classList.add('incorrect');
+        input.classList.add('incorrect');
         lives--;
         document.getElementById('lives').textContent = lives;
         if (lives <= 0) {
             alert("Game Over!");
             resetGame();
         } else {
-            incorrectWords.push({ japanese: fallingWord.text, english: currentWord, options: getCurrentOptions() });
-            setTimeout(fetchWord, 1000); // Fetch next word after a short delay
+            incorrectWords.push({ japanese: fallingWord.text, english: currentWord });
+            showCorrectAnswer();
         }
     }
+    input.value = '';
+    input.classList.remove('correct', 'incorrect');
 }
 
-function getCurrentOptions() {
-    const buttons = document.querySelectorAll('.option-btn');
-    return Array.from(buttons).map(btn => btn.textContent);
+function showCorrectAnswer() {
+    isPaused = true;
+    const correctAnswerDiv = document.createElement('div');
+    correctAnswerDiv.id = 'correct-answer';
+    correctAnswerDiv.innerHTML = `<p>Correct Answer: ${currentJapaneseWord} - ${currentWord}</p>`;
+    correctAnswerDiv.style.position = 'absolute';
+    correctAnswerDiv.style.top = '50%';
+    correctAnswerDiv.style.left = '50%';
+    correctAnswerDiv.style.transform = 'translate(-50%, -50%)';
+    correctAnswerDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
+    correctAnswerDiv.style.color = '#fff';
+    correctAnswerDiv.style.padding = '20px';
+    correctAnswerDiv.style.borderRadius = '10px';
+    correctAnswerDiv.style.zIndex = '1000';
+    document.getElementById('game-container').appendChild(correctAnswerDiv);
+
+    // Speak the original word
+    speakWord(currentJapaneseWord);
+
+    setTimeout(() => {
+        correctAnswerDiv.remove();
+        isPaused = false;
+        fetchWord();
+    }, 3000); // Show correct answer for 3 seconds
 }
 
 function speakWord(word) {
@@ -192,16 +189,23 @@ function showCongratsMessage() {
 
 function resetGame() {
     score = 0;
-    lives = 5;
-    wordSpeed = 1.0; // Reset speed
+    lives = 10;
+    wordSpeed = 0.5; // Reset speed
     correctWords = [];
     incorrectWords = [];
     repeatWordCounter = 0;
+    isPaused = false;
     document.getElementById('score').textContent = score;
     document.getElementById('lives').textContent = lives;
     fetchWord();
 }
 
+document.getElementById('submit-btn').addEventListener('click', checkAnswer);
+document.getElementById('answer-input').addEventListener('keypress', function(event) {
+    if (event.key === 'Enter') {
+        checkAnswer();
+    }
+});
 document.getElementById('reset-btn').addEventListener('click', resetGame);
 
 window.onload = () => {
