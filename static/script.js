@@ -107,6 +107,15 @@ function normalizeText(text) {
 function checkAnswer() {
     const input = document.getElementById('answer-input');
     const answer = normalizeText(input.value);
+
+    if (answer === "") {
+        input.classList.add('incorrect');
+        setTimeout(() => {
+            input.classList.remove('incorrect');
+        }, 500); // Briefly indicate incorrect input
+        return; // Ignore empty input
+    }
+
     const normalizedCurrentWord = normalizeText(currentWord);
     if (answer === normalizedCurrentWord) {
         input.classList.add('correct');
