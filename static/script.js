@@ -53,7 +53,7 @@ function update() {
 }
 
 function fetchAllWords() {
-    fetch(`/get_all_words/${language}/${category}`)
+    fetch(`/get_all_words/${language}/${encodeURIComponent(category)}`)
         .then(response => response.json())
         .then(data => {
             const words = Object.keys(data).length; // Number of words fetched
@@ -77,7 +77,7 @@ function fetchWord() {
         showRepeatLabel(true);
         repeatWordCounter = 0;
     } else {
-        fetch(`/get_word/${language}/${category}`)
+        fetch(`/get_word/${language}/${encodeURIComponent(category)}`)
             .then(response => response.json())
             .then(data => {
                 if (data.japanese && data.english) {
