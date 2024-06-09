@@ -5,13 +5,12 @@ let fallingWords = [];
 let correctWords = [];
 let incorrectWords = [];
 let totalWords = 0;
-let wordSpeed = 0.2; // Reduced initial falling speed
+let wordSpeed = 0.3; // Reduced initial falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 1; // Number of words to drop at a time
-let wordDropDelay = 3000; // Increased delay in milliseconds between dropping words
+let wordDropDelay = 2000; // Increased delay in milliseconds between dropping words
 let usedWords = []; // Keep track of used words to avoid repetition in the same set
-let answeredWords = []; // Keep track of correctly answered words in the current set
 
 const config = {
     type: Phaser.AUTO,
@@ -74,7 +73,6 @@ function fetchAllWords() {
 
 function fetchWords() {
     currentWords = [];
-    answeredWords = [];
     fallingWords.forEach(fallingWord => {
         if (fallingWord) {
             fallingWord.destroy();
@@ -137,34 +135,24 @@ function checkAnswer() {
         return; // Ignore empty input
     }
 
+    const answers = answer.split(',').map(normalizeText);
     const normalizedCurrentWords = currentWords.map(word => normalizeText(word.english));
-    const index = normalizedCurrentWords.indexOf(answer);
+    const correctAnswers = answers.every(ans => normalizedCurrentWords.includes(ans));
+    const allAnswered = normalizedCurrentWords.every(word => answers.includes(word));
 
-    if (index !== -1) {
+    if (correctAnswers && allAnswered) {
         input.classList.add('correct');
-        setTimeout(() => {
-            input.classList.remove('correct');
-        }, 500); // Briefly indicate correct input
-        answeredWords.push(currentWords[index]);
-        fallingWords[index].destroy();
-        fallingWords[index] = null;
-        currentWords.splice(index, 1);
-        fallingWords.splice(index, 1);
-        input.value = '';
-
-        if (answeredWords.length === wordsToDrop) {
-            score++;
-            document.getElementById('score').textContent = score;
-            correctWords.push(...answeredWords);
-            wordSpeed = 0.2; // Reset speed to normal
-            if (correctWords.length === totalWords) {
-                showCongratsMessage();
-            } else {
-                if (score !== 0 && score % 2 === 0) { // Ensure wordsToDrop increases only when score is a non-zero multiple of 5
-                    wordsToDrop++;
-                }
-                setTimeout(fetchWords, 500); // Fetch next words after a short delay
+        score++;
+        document.getElementById('score').textContent = score;
+        correctWords.push(...currentWords);
+        wordSpeed = 0.3; // Reset speed to normal
+        if (correctWords.length === totalWords) {
+            showCongratsMessage();
+        } else {
+            if (score !== 0 && score % 5 === 0) { // Ensure wordsToDrop increases only when score is a non-zero multiple of 5
+                wordsToDrop++;
             }
+            setTimeout(fetchWords, 500); // Fetch next words after a short delay
         }
     } else {
         input.classList.add('incorrect');
@@ -174,11 +162,12 @@ function checkAnswer() {
             alert("Game Over!");
             resetGame();
         } else {
-            setTimeout(() => {
-                input.classList.remove('incorrect');
-            }, 500); // Briefly indicate incorrect input
+            incorrectWords.push(...currentWords);
+            showCorrectAnswer();
         }
     }
+    input.value = '';
+    input.classList.remove('correct', 'incorrect');
 }
 
 function showCorrectAnswer() {
@@ -240,13 +229,12 @@ function showCongratsMessage() {
 function resetGame() {
     score = 0;
     lives = 10;
-    wordSpeed = 0.2; // Reset speed
+    wordSpeed = 0.3; // Reset speed
     wordsToDrop = 1; // Reset the number of words to drop
     correctWords = [];
     incorrectWords = [];
     repeatWordCounter = 0;
     usedWords = []; // Reset used words
-    answeredWords = []; // Reset answered words
     isPaused = false;
     document.getElementById('score').textContent = score;
     document.getElementById('lives').textContent = lives;
@@ -264,7 +252,3 @@ document.getElementById('reset-btn').addEventListener('click', resetGame);
 window.onload = () => {
     fetchWords();
 };
-
-// Add touch event listeners for mobile compatibility
-document.getElementById('submit-btn').addEventListener('touchstart', checkAnswer);
-document.getElementById('reset-btn').addEventListener('touchstart', resetGame);
