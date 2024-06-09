@@ -149,7 +149,7 @@ function checkAnswer() {
         if (correctWords.length === totalWords) {
             showCongratsMessage();
         } else {
-            if (score !== 0 && score % 5 === 0) { // Ensure wordsToDrop increases only when score is a non-zero multiple of 5
+            if (score !== 0 && score % 3 === 0) { // Ensure wordsToDrop increases only when score is a non-zero multiple of 5
                 wordsToDrop++;
             }
             setTimeout(fetchWords, 500); // Fetch next words after a short delay
