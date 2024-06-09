@@ -5,11 +5,11 @@ let fallingWords = [];
 let correctWords = [];
 let incorrectWords = [];
 let totalWords = 0;
-let wordSpeed = 0.3; // Reduced initial falling speed
+let wordSpeed = 0.2; // Reduced initial falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 1; // Number of words to drop at a time
-let wordDropDelay = 2000; // Increased delay in milliseconds between dropping words
+let wordDropDelay = 3000; // Increased delay in milliseconds between dropping words
 let usedWords = []; // Keep track of used words to avoid repetition in the same set
 
 const config = {
@@ -145,7 +145,7 @@ function checkAnswer() {
         score++;
         document.getElementById('score').textContent = score;
         correctWords.push(...currentWords);
-        wordSpeed = 0.3; // Reset speed to normal
+        wordSpeed = 0.2; // Reset speed to normal
         if (correctWords.length === totalWords) {
             showCongratsMessage();
         } else {
@@ -229,7 +229,7 @@ function showCongratsMessage() {
 function resetGame() {
     score = 0;
     lives = 10;
-    wordSpeed = 0.3; // Reset speed
+    wordSpeed = 0.2; // Reset speed
     wordsToDrop = 1; // Reset the number of words to drop
     correctWords = [];
     incorrectWords = [];
