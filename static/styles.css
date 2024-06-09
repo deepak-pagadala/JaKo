@@ -3,14 +3,19 @@ body {
     text-align: center;
     background-color: rgba(255, 255, 255, 0.8);
     background: url('/static/bg.png') no-repeat center center fixed;
+    background-size: cover;
+    margin: 0;
+    padding: 0;
 }
 
 .container {
-    margin-top: 50px;
+    margin-top: 20px;
+    padding: 10px;
 }
 
 h1 {
     font-size: 2em;
+    margin: 10px 0;
 }
 
 .btn {
@@ -21,6 +26,7 @@ h1 {
     color: white;
     text-decoration: none;
     border-radius: 5px;
+    font-size: 1em;
 }
 
 .btn:hover {
@@ -28,42 +34,17 @@ h1 {
 }
 
 #game-container {
-    width: 600px;
+    width: 90%;
+    max-width: 600px;
     height: 400px;
     margin: 20px auto;
     background-color: #fff;
     border: 2px solid #ccc;
+    position: relative;
 }
 
 #score-board {
     margin-top: 20px;
-}
-
-#options-container {
-    margin-top: 20px;
-}
-
-.option-btn {
-    display: inline-block;
-    padding: 10px 20px;
-    margin: 10px;
-    background-color: #2bb5ffef;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.option-btn:hover {
-    background-color: #555;
-}
-
-.correct {
-    background-color: green;
-}
-
-.incorrect {
-    background-color: red;
 }
 
 #input-container {
@@ -75,28 +56,60 @@ h1 {
 
 #answer-input {
     padding: 10px;
-    font-size: 16px;
+    font-size: 1em;
+    width: 70%;
+    max-width: 300px;
     border: 2px solid #ccc;
     border-radius: 5px;
-    margin-right: 10px;
-    width: 300px;
-}
-
-#answer-input:focus {
-    outline: none;
-    border-color: #2bb5ffef;
 }
 
 #submit-btn {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #6a6a6abd;
+    padding: 10px;
+    font-size: 1em;
+    margin-left: 10px;
+    background-color: #2bb5ffef;
     color: white;
     border: none;
     border-radius: 5px;
-    cursor: pointer;
 }
 
 #submit-btn:hover {
-    background-color: #2bb5ffef;
+    background-color: #555;
+}
+
+.correct {
+    background-color: green;
+}
+
+.incorrect {
+    background-color: red;
+}
+
+#correct-answer {
+    font-size: 1em;
+}
+
+@media (max-width: 600px) {
+    h1 {
+        font-size: 1.5em;
+    }
+
+    .btn {
+        font-size: 0.9em;
+        padding: 8px 15px;
+    }
+
+    #game-container {
+        height: 300px;
+    }
+
+    #answer-input {
+        font-size: 0.9em;
+        width: 60%;
+    }
+
+    #submit-btn {
+        font-size: 0.9em;
+        padding: 8px;
+    }
 }
