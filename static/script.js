@@ -9,8 +9,9 @@ let wordSpeed = 0.2; // Reduced initial falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 1; // Number of words to drop at a time
-let wordDropDelay = 3000; // Increased delay in milliseconds between dropping words
+let wordDropDelay = 3500; // Increased delay in milliseconds between dropping words
 let usedWords = []; // Keep track of used words to avoid repetition in the same set
+let answeredWords = []; // Keep track of correctly answered words in the current set
 
 const config = {
     type: Phaser.AUTO,
@@ -73,6 +74,7 @@ function fetchAllWords() {
 
 function fetchWords() {
     currentWords = [];
+    answeredWords = [];
     fallingWords.forEach(fallingWord => {
         if (fallingWord) {
             fallingWord.destroy();
@@ -135,24 +137,34 @@ function checkAnswer() {
         return; // Ignore empty input
     }
 
-    const answers = answer.split(',').map(normalizeText);
     const normalizedCurrentWords = currentWords.map(word => normalizeText(word.english));
-    const correctAnswers = answers.every(ans => normalizedCurrentWords.includes(ans));
-    const allAnswered = normalizedCurrentWords.every(word => answers.includes(word));
+    const index = normalizedCurrentWords.indexOf(answer);
 
-    if (correctAnswers && allAnswered) {
+    if (index !== -1) {
         input.classList.add('correct');
-        score++;
-        document.getElementById('score').textContent = score;
-        correctWords.push(...currentWords);
-        wordSpeed = 0.2; // Reset speed to normal
-        if (correctWords.length === totalWords) {
-            showCongratsMessage();
-        } else {
-            if (score !== 0 && score % 3 === 0) { // Ensure wordsToDrop increases only when score is a non-zero multiple of 5
-                wordsToDrop++;
+        setTimeout(() => {
+            input.classList.remove('correct');
+        }, 500); // Briefly indicate correct input
+        answeredWords.push(currentWords[index]);
+        fallingWords[index].destroy();
+        fallingWords[index] = null;
+        currentWords.splice(index, 1);
+        fallingWords.splice(index, 1);
+        input.value = '';
+
+        if (answeredWords.length === wordsToDrop) {
+            score++;
+            document.getElementById('score').textContent = score;
+            correctWords.push(...answeredWords);
+            wordSpeed = 0.2; // Reset speed to normal
+            if (correctWords.length === totalWords) {
+                showCongratsMessage();
+            } else {
+                if (score !== 0 && score % 3 === 0) { // Ensure wordsToDrop increases only when score is a non-zero multiple of 5
+                    wordsToDrop++;
+                }
+                setTimeout(fetchWords, 500); // Fetch next words after a short delay
             }
-            setTimeout(fetchWords, 500); // Fetch next words after a short delay
         }
     } else {
         input.classList.add('incorrect');
@@ -165,9 +177,9 @@ function checkAnswer() {
             incorrectWords.push(...currentWords);
             showCorrectAnswer();
         }
+        input.value = '';
+        input.classList.remove('correct', 'incorrect');
     }
-    input.value = '';
-    input.classList.remove('correct', 'incorrect');
 }
 
 function showCorrectAnswer() {
@@ -235,6 +247,7 @@ function resetGame() {
     incorrectWords = [];
     repeatWordCounter = 0;
     usedWords = []; // Reset used words
+    answeredWords = []; // Reset answered words
     isPaused = false;
     document.getElementById('score').textContent = score;
     document.getElementById('lives').textContent = lives;
