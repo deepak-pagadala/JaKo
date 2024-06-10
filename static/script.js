@@ -9,7 +9,7 @@ let wordSpeed = 0.2; // Reduced initial falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 1; // Number of words to drop at a time
-let wordDropDelay = 3500; // Increased delay in milliseconds between dropping words
+let wordDropDelay = 4500; // Increased delay in milliseconds between dropping words
 let usedWords = []; // Keep track of used words to avoid repetition in the same set
 let answeredWords = []; // Keep track of correctly answered words in the current set
 
