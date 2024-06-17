@@ -1,15 +1,15 @@
 let score = 0;
-let lives = 10;
+let lives = 3;
 let currentWords = [];
 let fallingWords = [];
 let correctWords = [];
 let incorrectWords = [];
 let totalWords = 0;
-let wordSpeed = 0.2; // Reduced initial falling speed
+let wordSpeed = 0.5; // Reduced initial falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 1; // Number of words to drop at a time
-let wordDropDelay = 4500; // Increased delay in milliseconds between dropping words
+let wordDropDelay = 1000; // Increased delay in milliseconds between dropping words
 let usedWords = []; // Keep track of used words to avoid repetition in the same set
 let answeredWords = []; // Keep track of correctly answered words in the current set
 
@@ -100,8 +100,8 @@ function fetchWords() {
                     .then(response => response.json())
                     .then(data => {
                         if (data.japanese && data.english) {
-                            if (correctWords.some(word => word.english === data.english) || usedWords.includes(data.english)) {
-                                fetchNextWord(); // Fetch another word if this one has been answered correctly before or is used in this set
+                            if (usedWords.includes(data.english)) {
+                                fetchNextWord(); // Fetch another word if this one has been used in this set
                             } else {
                                 currentWords.push(data);
                                 fallingWords.push(game.scene.scenes[0].add.text(300, 0, data.japanese, { font: '48px Arial', fill: '#000' }).setOrigin(0.5));
@@ -114,6 +114,11 @@ function fetchWords() {
                             }
                         }
                     });
+            }
+        } else {
+            // Reset usedWords if all words in the dictionary have been used
+            if (usedWords.length >= totalWords) {
+                usedWords = [];
             }
         }
     }
@@ -156,15 +161,11 @@ function checkAnswer() {
             score++;
             document.getElementById('score').textContent = score;
             correctWords.push(...answeredWords);
-            wordSpeed = 0.2; // Reset speed to normal
-            if (correctWords.length === totalWords) {
-                showCongratsMessage();
-            } else {
-                if (score !== 0 && score % 3 === 0) { // Ensure wordsToDrop increases only when score is a non-zero multiple of 5
-                    wordsToDrop++;
-                }
-                setTimeout(fetchWords, 500); // Fetch next words after a short delay
+            wordSpeed *= 1.1; // Increase speed by 10% after each correct answer
+            if (score !== 0 && score % 3 === 0) { // Ensure wordsToDrop increases only when score is a non-zero multiple of 3
+                wordsToDrop++;
             }
+            setTimeout(fetchWords, 500); // Fetch next words after a short delay
         }
     } else {
         input.classList.add('incorrect');
@@ -223,25 +224,10 @@ function showRepeatLabel(isRepeat) {
     }
 }
 
-function showCongratsMessage() {
-    if (fallingWords) {
-        fallingWords.forEach(fallingWord => {
-            if (fallingWord) {
-                fallingWord.destroy();
-            }
-        });
-    }
-    game.scene.scenes[0].add.text(300, 200, `Congrats! You have learned ${category}!`, { font: '32px Arial', fill: '#000' }).setOrigin(0.5);
-    setTimeout(() => {
-        resetGame();
-        window.location.href = `/category/${language}`;
-    }, 3000); // Redirect to category selection after 3 seconds
-}
-
 function resetGame() {
     score = 0;
-    lives = 10;
-    wordSpeed = 0.2; // Reset speed
+    lives = 3;
+    wordSpeed = 0.5; // Reset speed
     wordsToDrop = 1; // Reset the number of words to drop
     correctWords = [];
     incorrectWords = [];
