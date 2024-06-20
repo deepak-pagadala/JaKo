@@ -179,7 +179,7 @@ function checkAnswer() {
             score++;
             document.getElementById('score').textContent = `Score: ${score}`;
             correctWords.push(...answeredWords);
-            if (score !== 0 && score % 2 === 0) { // Double the wordsToDrop after every 2 correct answers
+            if (score !== 0 && score % 3 === 0) { // Double the wordsToDrop after every 2 correct answers
                 wordsToDrop *= 2;
             }
             setTimeout(fetchWords, 500); // Fetch next words after a short delay
