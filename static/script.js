@@ -5,12 +5,11 @@ let fallingWords = [];
 let correctWords = [];
 let incorrectWords = [];
 let totalWords = 0;
-let wordSpeed = 0.4; // Updated falling speed
+let wordSpeed = 0.4; // Falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 1; // Number of words to drop at a time
 let wordDropDelay = 2000; // Delay in milliseconds between dropping words
-let usedWords = []; // Keep track of used words to avoid repetition in the same set
 let answeredWords = []; // Keep track of correctly answered words in the current set
 
 const config = {
@@ -91,7 +90,6 @@ function fetchWords() {
         }
     });
     fallingWords = [];
-    usedWords = [];
 
     let fetchWordIndex = 0;
     function fetchNextWord() {
@@ -110,25 +108,15 @@ function fetchWords() {
                     .then(response => response.json())
                     .then(data => {
                         if (data.japanese && data.english) {
-                            if (usedWords.includes(data.english)) {
-                                fetchNextWord(); // Fetch another word if this one has been used in this set
-                            } else {
-                                currentWords.push(data);
-                                addFallingWord(data.japanese, data.english);
-                                speakWord(data.japanese);
-                                showRepeatLabel(false);
-                                usedWords.push(data.english); // Track used words in the current set
-                                console.log('Fetched word:', data.japanese);
-                                fetchWordIndex++;
-                                setTimeout(fetchNextWord, wordDropDelay);
-                            }
+                            currentWords.push(data);
+                            addFallingWord(data.japanese, data.english);
+                            speakWord(data.japanese);
+                            showRepeatLabel(false);
+                            console.log('Fetched word:', data.japanese);
+                            fetchWordIndex++;
+                            setTimeout(fetchNextWord, wordDropDelay);
                         }
                     });
-            }
-        } else {
-            // Reset usedWords if all words in the dictionary have been used
-            if (usedWords.length >= totalWords) {
-                usedWords = [];
             }
         }
     }
@@ -179,7 +167,7 @@ function checkAnswer() {
             score++;
             document.getElementById('score').textContent = `Score: ${score}`;
             correctWords.push(...answeredWords);
-            if (score !== 0 && score % 3 === 0) { // Double the wordsToDrop after every 2 correct answers
+            if (score !== 0 && score % 2 === 0) { // Double the wordsToDrop after every 2 correct answers
                 wordsToDrop *= 2;
             }
             setTimeout(fetchWords, 500); // Fetch next words after a short delay
@@ -249,7 +237,6 @@ function resetGame() {
     correctWords = [];
     incorrectWords = [];
     repeatWordCounter = 0;
-    usedWords = []; // Reset used words
     answeredWords = []; // Reset answered words
     isPaused = false;
     document.getElementById('score').textContent = `Score: ${score}`;
