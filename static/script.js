@@ -5,7 +5,7 @@ let fallingWords = [];
 let correctWords = [];
 let incorrectWords = [];
 let totalWords = 0;
-let wordSpeed = 0.4; // Constant falling speed
+let wordSpeed = 0.4; // Updated falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 1; // Number of words to drop at a time
@@ -67,7 +67,7 @@ function update() {
 
 function updateLivesDisplay() {
     for (let i = 1; i <= 3; i++) {
-        document.getElementById(`heart${i}`).src = i <= lives ? '/static/heart-full.png' : '/static/heart-empty.png';
+        document.getElementById(`heart${i}`).src = i <= lives ? '/static/images/heart-full.png' : '/static/images/heart-empty.png';
     }
 }
 
@@ -253,8 +253,7 @@ function resetGame() {
     answeredWords = []; // Reset answered words
     isPaused = false;
     document.getElementById('score').textContent = `Score: ${score}`;
-    document.getElementById('lives').textContent = `Lives: ${lives}`;
-    updateLivesDisplay();
+    updateLivesDisplay(); // Ensure lives are displayed as hearts
     fetchWords();
 }
 
