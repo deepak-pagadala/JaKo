@@ -1,80 +1,134 @@
+@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
+
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Press Start 2P', cursive;
     text-align: center;
     background-color: rgba(255, 255, 255, 0.8);
     background: url('/static/bg.png') no-repeat center center fixed;
     background-size: cover;
     margin: 0;
     padding: 0;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    overflow: hidden; /* Prevent scrolling */
+    color: white;
 }
 
-.container {
-    margin-top: 20px;
-    padding: 10px;
+#header {
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+#game-container {
+    flex: 1; /* Take up the remaining space */
+    position: relative;
+    background-color: transparent;
+    margin-bottom: 0; /* Remove previous margin */
+}
+
+#input-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 100px; /* Position just above the footer, moved down by 50px */
+    left: 0;
+    right: 0;
+}
+
+#footer {
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 0px; /* Adjusted position */
+    left: 0;
+    right: 0;
 }
 
 h1 {
-    font-size: 2em;
+    font-size: 1.2em; /* Smaller font size for heading */
     margin: 10px 0;
+    color: white;
 }
 
 .btn {
     display: inline-block;
-    padding: 10px 20px;
-    margin: 10px;
-    background-color: #6a6a6abd;
+    padding: 8px 16px; /* Smaller padding for buttons */
+    margin: 8px;
+    background-color: transparent;
     color: white;
     text-decoration: none;
     border-radius: 5px;
-    font-size: 1em;
+    font-size: 0.8em; /* Smaller font size for buttons */
+    border: 2px solid white;
+    font-family: 'Press Start 2P', cursive;
+    transition: transform 0.2s ease-in-out; /* Add transition for transform */
 }
 
 .btn:hover {
-    background-color: #2bb5ffef;
-}
-
-#game-container {
-    width: 90%;
-    max-width: 600px;
-    height: 400px;
-    margin: 20px auto;
-    background-color: #fff;
-    border: 2px solid #ccc;
-    position: relative;
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px); /* Move up slightly on hover */
 }
 
 #score-board {
-    margin-top: 20px;
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    text-align: right;
+}
+
+#score {
+    font-size: 1em; /* Smaller font size for score */
+    margin-top: 5px;
+    color: white;
+}
+
+#lives {
+    font-size: 1em; /* Smaller font size for lives */
+    margin-bottom: 5px;
+    color: white;
 }
 
 #input-container {
-    margin-top: 20px;
     display: flex;
     justify-content: center;
     align-items: center;
+    margin-top: 10px;
 }
 
 #answer-input {
-    padding: 10px;
-    font-size: 1em;
+    padding: 8px; /* Smaller padding for input */
+    font-size: 0.8em; /* Smaller font size for input */
     width: 70%;
     max-width: 300px;
-    border: 2px solid #ccc;
+    border: 2px solid white;
     border-radius: 5px;
+    background-color: transparent;
+    color: white;
+    font-family: 'Press Start 2P', cursive;
 }
 
 #submit-btn {
-    padding: 10px;
-    font-size: 1em;
+    padding: 8px; /* Smaller padding for submit button */
+    font-size: 0.8em; /* Smaller font size for submit button */
     margin-left: 10px;
-    background-color: #2bb5ffef;
+    background-color: transparent;
     color: white;
-    border: none;
+    border: 2px solid white;
     border-radius: 5px;
+    font-family: 'Press Start 2P', cursive;
+    transition: transform 0.2s ease-in-out; /* Add transition for transform */
 }
 
 #submit-btn:hover {
-    background-color: #555;
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: translateY(-5px); /* Move up slightly on hover */
 }
 
 .correct {
@@ -86,30 +140,54 @@ h1 {
 }
 
 #correct-answer {
-    font-size: 1em;
+    font-size: 0.8em; /* Smaller font size for correct answer display */
+    color: white;
+    font-family: 'Press Start 2P', cursive;
 }
 
 @media (max-width: 600px) {
     h1 {
-        font-size: 1.5em;
+        font-size: 1em; /* Smaller font size for heading on small screens */
     }
 
     .btn {
-        font-size: 0.9em;
-        padding: 8px 15px;
-    }
-
-    #game-container {
-        height: 300px;
+        font-size: 0.7em; /* Smaller font size for buttons on small screens */
+        padding: 6px 12px; /* Smaller padding for buttons on small screens */
     }
 
     #answer-input {
-        font-size: 0.9em;
+        font-size: 0.7em; /* Smaller font size for input on small screens */
         width: 60%;
     }
 
     #submit-btn {
-        font-size: 0.9em;
-        padding: 8px;
+        font-size: 0.7em; /* Smaller font size for submit button on small screens */
+        padding: 6px; /* Smaller padding for submit button on small screens */
     }
+
+    #score-board {
+        top: 5px; /* Adjust top position for smaller screens */
+        right: 5px; /* Adjust right position for smaller screens */
+    }
+
+    #score {
+        font-size: 0.7em; /* Smaller font size for score on small screens */
+    }
+
+    #lives {
+        font-size: 0.7em; /* Smaller font size for lives on small screens */
+    }
+}
+
+#lives {
+    font-size: 1em;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.heart {
+    width: 32px;
+    height: 32px;
+    margin: 0 5px;
 }
