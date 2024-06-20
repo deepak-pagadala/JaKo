@@ -5,20 +5,20 @@ let fallingWords = [];
 let correctWords = [];
 let incorrectWords = [];
 let totalWords = 0;
-let wordSpeed = 0.5; // Reduced initial falling speed
+let wordSpeed = 0.4; // Constant falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 1; // Number of words to drop at a time
-let wordDropDelay = 1000; // Increased delay in milliseconds between dropping words
+let wordDropDelay = 2000; // Delay in milliseconds between dropping words
 let usedWords = []; // Keep track of used words to avoid repetition in the same set
 let answeredWords = []; // Keep track of correctly answered words in the current set
 
 const config = {
     type: Phaser.AUTO,
-    width: 600,
-    height: 400,
+    width: window.innerWidth,
+    height: window.innerHeight - 300, // Adjust height for header and footer
     parent: 'game-container',
-    backgroundColor: '#ffffff',
+    transparent: true, // Make the game background transparent
     scene: {
         preload: preload,
         create: create,
@@ -27,6 +27,10 @@ const config = {
 };
 
 const game = new Phaser.Game(config);
+
+window.addEventListener('resize', () => {
+    game.scale.resize(window.innerWidth, window.innerHeight - 300);
+});
 
 function preload() {
     console.log('Preloading assets...');
@@ -43,9 +47,9 @@ function update() {
         fallingWords.forEach((fallingWord, index) => {
             if (fallingWord) {
                 fallingWord.y += wordSpeed; // Speed of the falling word
-                if (fallingWord.y > 400) { // Height of the game area
+                if (fallingWord.y > game.config.height) { // Height of the game area
                     lives--;
-                    document.getElementById('lives').textContent = lives;
+                    updateLivesDisplay();
                     if (lives <= 0) {
                         alert("Game Over!");
                         resetGame();
@@ -58,6 +62,12 @@ function update() {
                 }
             }
         });
+    }
+}
+
+function updateLivesDisplay() {
+    for (let i = 1; i <= 3; i++) {
+        document.getElementById(`heart${i}`).src = i <= lives ? '/static/images/heart-full.png' : '/static/images/heart-empty.png';
     }
 }
 
@@ -90,7 +100,7 @@ function fetchWords() {
                 // Reintroduce an incorrect word
                 const wordData = incorrectWords.shift();
                 currentWords.push(wordData);
-                fallingWords.push(game.scene.scenes[0].add.text(300, 0, wordData.japanese, { font: '48px Arial', fill: '#000' }).setOrigin(0.5));
+                addFallingWord(wordData.japanese, wordData.english);
                 speakWord(wordData.japanese);
                 showRepeatLabel(true);
                 fetchWordIndex++;
@@ -104,7 +114,7 @@ function fetchWords() {
                                 fetchNextWord(); // Fetch another word if this one has been used in this set
                             } else {
                                 currentWords.push(data);
-                                fallingWords.push(game.scene.scenes[0].add.text(300, 0, data.japanese, { font: '48px Arial', fill: '#000' }).setOrigin(0.5));
+                                addFallingWord(data.japanese, data.english);
                                 speakWord(data.japanese);
                                 showRepeatLabel(false);
                                 usedWords.push(data.english); // Track used words in the current set
@@ -124,6 +134,14 @@ function fetchWords() {
     }
     fetchNextWord();
     repeatWordCounter++;
+}
+
+function addFallingWord(japanese, english) {
+    const textObj = game.scene.scenes[0].add.text(0, 0, japanese, { font: '28px Press Start 2P', fill: '#fff' });
+    const textWidth = textObj.width;
+    const x = Phaser.Math.Between(100, game.config.width - 100);
+    textObj.setPosition(x, 0);
+    fallingWords.push(textObj);
 }
 
 function normalizeText(text) {
@@ -159,18 +177,17 @@ function checkAnswer() {
 
         if (answeredWords.length === wordsToDrop) {
             score++;
-            document.getElementById('score').textContent = score;
+            document.getElementById('score').textContent = `Score: ${score}`;
             correctWords.push(...answeredWords);
-            wordSpeed *= 1.1; // Increase speed by 10% after each correct answer
-            if (score !== 0 && score % 3 === 0) { // Ensure wordsToDrop increases only when score is a non-zero multiple of 3
-                wordsToDrop++;
+            if (score !== 0 && score % 2 === 0) { // Double the wordsToDrop after every 2 correct answers
+                wordsToDrop *= 2;
             }
             setTimeout(fetchWords, 500); // Fetch next words after a short delay
         }
     } else {
         input.classList.add('incorrect');
         lives--;
-        document.getElementById('lives').textContent = lives;
+        updateLivesDisplay();
         if (lives <= 0) {
             alert("Game Over!");
             resetGame();
@@ -227,7 +244,7 @@ function showRepeatLabel(isRepeat) {
 function resetGame() {
     score = 0;
     lives = 3;
-    wordSpeed = 0.5; // Reset speed
+    wordSpeed = 0.4; // Reset speed
     wordsToDrop = 1; // Reset the number of words to drop
     correctWords = [];
     incorrectWords = [];
@@ -235,8 +252,9 @@ function resetGame() {
     usedWords = []; // Reset used words
     answeredWords = []; // Reset answered words
     isPaused = false;
-    document.getElementById('score').textContent = score;
-    document.getElementById('lives').textContent = lives;
+    document.getElementById('score').textContent = `Score: ${score}`;
+    document.getElementById('lives').textContent = `Lives: ${lives}`;
+    updateLivesDisplay();
     fetchWords();
 }
 
