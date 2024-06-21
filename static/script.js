@@ -5,7 +5,7 @@ let fallingWords = [];
 let correctWords = [];
 let incorrectWords = [];
 let totalWords = 0;
-let wordSpeed = 0.4; // Falling speed
+let wordSpeed = 0.5; // Falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 1; // Number of words to drop at a time
@@ -66,7 +66,7 @@ function update() {
 
 function updateLivesDisplay() {
     for (let i = 1; i <= 3; i++) {
-        document.getElementById(`heart${i}`).src = i <= lives ? '/static/heart-full.png' : '/static/heart-empty.png';
+        document.getElementById(`heart${i}`).src = i <= lives ? '/static/images/heart-full.png' : '/static/images/heart-empty.png';
     }
 }
 
@@ -109,8 +109,13 @@ function fetchWords() {
                     .then(data => {
                         if (data.japanese && data.english) {
                             currentWords.push(data);
-                            addFallingWord(data.japanese, data.english);
-                            speakWord(data.japanese);
+                            if (mode === 'english') {
+                                addFallingWord(data.japanese, data.english);
+                                speakWord(data.japanese);
+                            } else {
+                                addFallingWord(data.english, data.japanese);
+                                speakWord(data.english);
+                            }
                             showRepeatLabel(false);
                             console.log('Fetched word:', data.japanese);
                             fetchWordIndex++;
@@ -124,8 +129,8 @@ function fetchWords() {
     repeatWordCounter++;
 }
 
-function addFallingWord(japanese, english) {
-    const textObj = game.scene.scenes[0].add.text(0, 0, japanese, { font: '28px Press Start 2P', fill: '#fff' });
+function addFallingWord(word, translation) {
+    const textObj = game.scene.scenes[0].add.text(0, 0, word, { font: '28px Press Start 2P', fill: '#fff' });
     const textWidth = textObj.width;
     const x = Phaser.Math.Between(100, game.config.width - 100);
     textObj.setPosition(x, 0);
@@ -148,7 +153,7 @@ function checkAnswer() {
         return; // Ignore empty input
     }
 
-    const normalizedCurrentWords = currentWords.map(word => normalizeText(word.english));
+    const normalizedCurrentWords = currentWords.map(word => normalizeText(mode === 'english' ? word.english : word.japanese));
     const index = normalizedCurrentWords.indexOf(answer);
 
     if (index !== -1) {
@@ -205,7 +210,7 @@ function showCorrectAnswer() {
     document.getElementById('game-container').appendChild(correctAnswerDiv);
 
     // Speak the original words
-    currentWords.forEach(word => speakWord(word.japanese));
+    currentWords.forEach(word => speakWord(mode === 'english' ? word.japanese : word.english));
 
     setTimeout(() => {
         correctAnswerDiv.remove();
@@ -232,7 +237,7 @@ function showRepeatLabel(isRepeat) {
 function resetGame() {
     score = 0;
     lives = 3;
-    wordSpeed = 0.4; // Reset speed
+    wordSpeed = 0.5; // Reset speed
     wordsToDrop = 1; // Reset the number of words to drop
     correctWords = [];
     incorrectWords = [];
