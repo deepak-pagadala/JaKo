@@ -15,40 +15,9 @@ body {
     color: white;
 }
 
-#header {
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: relative;
-}
-
-#game-container {
-    flex: 1; /* Take up the remaining space */
-    position: relative;
-    background-color: transparent;
-    margin-bottom: 0; /* Remove previous margin */
-}
-
-#input-area {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    bottom: 100px; /* Position just above the footer, moved down by 50px */
-    left: 0;
-    right: 0;
-}
-
-#footer {
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    bottom: 0px; /* Adjusted position */
-    left: 0;
-    right: 0;
+.container {
+    margin-top: 20px;
+    padding: 10px;
 }
 
 h1 {
@@ -93,6 +62,34 @@ h1 {
     font-size: 1em; /* Smaller font size for lives */
     margin-bottom: 5px;
     color: white;
+}
+
+#game-container {
+    flex: 1; /* Take up the remaining space */
+    position: relative;
+    background-color: transparent;
+    margin-bottom: 0; /* Remove previous margin */
+}
+
+#input-area {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 100px; /* Position just above the footer, moved down by 50px */
+    left: 0;
+    right: 0;
+}
+
+#footer {
+    height: 100px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    bottom: 0px; /* Adjusted position */
+    left: 0;
+    right: 0;
 }
 
 #input-container {
