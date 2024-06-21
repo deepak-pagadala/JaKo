@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Select Mode</title>
+    <link rel="stylesheet" href="/static/styles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Select a Mode to Learn in {{ category|capitalize }}</h1>
+        <a href="/game/{{ language }}/{{ category }}/english" class="btn">Learn in {{ language|capitalize }}</a>
+        <a href="/game/{{ language }}/{{ category }}/original" class="btn">Learn in English</a>
+    </div>
+</body>
+</html>
