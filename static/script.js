@@ -66,7 +66,7 @@ function update() {
 
 function updateLivesDisplay() {
     for (let i = 1; i <= 3; i++) {
-        document.getElementById(`heart${i}`).src = i <= lives ? '/static/images/heart-full.png' : '/static/images/heart-empty.png';
+        document.getElementById(`heart${i}`).src = i <= lives ? '/static/heart-full.png' : '/static/heart-empty.png';
     }
 }
 
