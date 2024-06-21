@@ -1,6 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 import json
 import random
+import urllib.parse
 
 app = Flask(__name__)
 
@@ -36,6 +37,7 @@ def get_all_words(language, category):
         vocab = japanese_vocab
     else:
         vocab = korean_vocab
+    category = urllib.parse.unquote(category)  # Decode URL-encoded category name
     return jsonify(vocab[category])
 
 @app.route('/get_word/<language>/<category>')
@@ -44,6 +46,7 @@ def get_word(language, category):
         vocab = japanese_vocab
     else:
         vocab = korean_vocab
+    category = urllib.parse.unquote(category)  # Decode URL-encoded category name
     word = random.choice(list(vocab[category].items()))
     return jsonify({'japanese': word[0], 'english': word[1]})
 
