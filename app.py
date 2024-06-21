@@ -12,7 +12,7 @@ with open('vocabularies/korean.json', 'r', encoding='utf-8') as f:
 
 @app.route('/')
 def language_selection():
-    return render_template('language_selection.html')
+    return render_template('language.html')
 
 @app.route('/category/<language>')
 def category_selection(language):
