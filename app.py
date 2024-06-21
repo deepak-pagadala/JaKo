@@ -25,11 +25,11 @@ def category(language):
 
 @app.route('/mode/<language>/<category>')
 def mode_selection(language, category):
-    return render_template('mode_selection.html', language=language, category=category)
+    return render_template('mode_selection.html', language=language, category=urllib.parse.unquote(category))
 
 @app.route('/game/<language>/<category>/<mode>')
 def game(language, category, mode):
-    return render_template('game.html', language=language, category=category, mode=mode)
+    return render_template('game.html', language=language, category=urllib.parse.unquote(category), mode=mode)
 
 @app.route('/get_all_words/<language>/<category>')
 def get_all_words(language, category):
@@ -38,6 +38,7 @@ def get_all_words(language, category):
     else:
         vocab = korean_vocab
     category = urllib.parse.unquote(category)  # Decode URL-encoded category name
+    print(f"Decoded category: {category}")  # Debug statement
     return jsonify(vocab[category])
 
 @app.route('/get_word/<language>/<category>')
@@ -47,6 +48,7 @@ def get_word(language, category):
     else:
         vocab = korean_vocab
     category = urllib.parse.unquote(category)  # Decode URL-encoded category name
+    print(f"Decoded category: {category}")  # Debug statement
     word = random.choice(list(vocab[category].items()))
     return jsonify({'japanese': word[0], 'english': word[1]})
 
