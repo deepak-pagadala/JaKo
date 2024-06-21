@@ -11,11 +11,15 @@ with open('vocabularies/korean.json', 'r', encoding='utf-8') as f:
     korean_vocab = json.load(f)
 
 @app.route('/')
-def language_selection():
+def index():
+    return render_template('index.html')
+
+@app.route('/language')
+def language():
     return render_template('language.html')
 
 @app.route('/category/<language>')
-def category_selection(language):
+def category(language):
     return render_template('category.html', language=language)
 
 @app.route('/mode/<language>/<category>')
