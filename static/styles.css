@@ -182,6 +182,15 @@ h1 {
     #lives {
         font-size: 0.7em; /* Smaller font size for lives on small screens */
     }
+
+    #input-area {
+        bottom: 120px; /* Adjust position for smaller screens */
+    }
+
+    #footer {
+        height: 80px; /* Adjust height for smaller screens */
+        bottom: 0px;
+    }
 }
 
 #lives {
