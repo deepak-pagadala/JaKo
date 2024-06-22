@@ -38,7 +38,6 @@ def get_all_words(language, category):
     else:
         vocab = korean_vocab
     category = urllib.parse.unquote(category)  # Decode URL-encoded category name
-    print(f"Decoded category: {category}")  # Debug statement
     return jsonify(vocab[category])
 
 @app.route('/get_word/<language>/<category>')
@@ -48,7 +47,6 @@ def get_word(language, category):
     else:
         vocab = korean_vocab
     category = urllib.parse.unquote(category)  # Decode URL-encoded category name
-    print(f"Decoded category: {category}")  # Debug statement
     word = random.choice(list(vocab[category].items()))
     return jsonify({'japanese': word[0], 'english': word[1]})
 
