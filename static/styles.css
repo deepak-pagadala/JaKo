@@ -16,14 +16,22 @@ body {
 }
 
 .container {
-    margin-top: 20px;
-    padding: 10px;
+    flex: 1; /* Allow container to take up available space */
+    overflow-y: auto; /* Enable vertical scrolling */
+    padding: 20px;
 }
 
 h1 {
     font-size: 1.2em; /* Smaller font size for heading */
     margin: 10px 0;
     color: white;
+}
+
+.category-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px; /* Space between buttons */
 }
 
 .btn {
@@ -76,7 +84,7 @@ h1 {
     justify-content: center;
     align-items: center;
     position: absolute;
-    bottom: 100px; /* Position just above the footer, moved down by 50px */
+    bottom: 150px; /* Position above the footer */
     left: 0;
     right: 0;
 }
