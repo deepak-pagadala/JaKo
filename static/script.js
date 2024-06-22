@@ -15,7 +15,7 @@ let answeredWords = []; // Keep track of correctly answered words in the current
 const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
-    height: window.innerHeight - 300, // Adjust height for header and footer
+    height: window.innerHeight - 250, // Adjust height for header and footer
     parent: 'game-container',
     transparent: true, // Make the game background transparent
     scene: {
@@ -28,7 +28,7 @@ const config = {
 const game = new Phaser.Game(config);
 
 window.addEventListener('resize', () => {
-    game.scale.resize(window.innerWidth, window.innerHeight - 300);
+    game.scale.resize(window.innerWidth, window.innerHeight - 250);
 });
 
 function preload() {
