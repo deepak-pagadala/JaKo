@@ -9,8 +9,8 @@
 <body>
     <div class="container">
         <h1>Select a Mode to Learn in {{ category|capitalize }}</h1>
-        <a href="/game/{{ language }}/{{ category }}/english" class="btn">Learn in {{ language|capitalize }}</a>
-        <a href="/game/{{ language }}/{{ category }}/original" class="btn">Learn in English</a>
+        <a href="/game/{{ language }}/{{ category|urlencode }}/english" class="btn">Learn in English</a>
+        <a href="/game/{{ language }}/{{ category|urlencode }}/original" class="btn">Learn in {{ language|capitalize }}</a>
     </div>
 </body>
 </html>
