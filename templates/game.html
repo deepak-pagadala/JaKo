@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game - Learn {{ language|capitalize }} Vocabulary</title>
     <link rel="stylesheet" href="/static/styles.css">
-    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
 </head>
 <body>
     <div id="header">
         <h1>Learning {{ category|capitalize }} in {{ language|capitalize }}</h1>
         <div id="score-board">
             <div id="lives">
-                <img src="/static/heart-full.png" class="heart" id="heart1">
-                <img src="/static/heart-full.png" class="heart" id="heart2">
-                <img src="/static/heart-full.png" class="heart" id="heart3">
+                <img src="/static/images/heart-full.png" class="heart" id="heart1">
+                <img src="/static/images/heart-full.png" class="heart" id="heart2">
+                <img src="/static/images/heart-full.png" class="heart" id="heart3">
             </div>
             <div id="score">Score: 0</div>
         </div>
@@ -33,11 +32,15 @@
         <a href="/category/{{ language }}" class="btn">Return to Categories</a>
         <a href="/language" class="btn">Return to Language Selection</a>
     </div>
+    <div id="level-up-notification" style="display: none;">
+        <img src="/static/images/levelup.png" alt="Level Up!">
+    </div>
     <script>
         const language = "{{ language }}";
         const category = "{{ category }}";
         const mode = "{{ mode }}";  // new variable to indicate the chosen mode
     </script>
+    <script src="/static/background-music.js"></script>
     <script src="/static/phaser.min.js"></script>
     <script src="/static/script.js"></script>
 </body>
