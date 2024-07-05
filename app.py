@@ -27,10 +27,6 @@ def category(language):
 def mode_selection(language, category):
     return render_template('mode_selection.html', language=language, category=urllib.parse.unquote(category))
 
-@app.route('/rules/<language>/<category>/<mode>')
-def rules(language, category, mode):
-    return render_template('rules.html', language=language, category=urllib.parse.unquote(category), mode=mode)
-
 @app.route('/game/<language>/<category>/<mode>')
 def game(language, category, mode):
     return render_template('game.html', language=language, category=urllib.parse.unquote(category), mode=mode)
@@ -42,10 +38,7 @@ def get_all_words(language, category):
     else:
         vocab = korean_vocab
     category = urllib.parse.unquote(category)  # Decode URL-encoded category name
-    if category in vocab:
-        return jsonify(vocab[category])
-    else:
-        return jsonify({"error": "Category not found"}), 404
+    return jsonify(vocab[category])
 
 @app.route('/get_word/<language>/<category>')
 def get_word(language, category):
@@ -54,11 +47,8 @@ def get_word(language, category):
     else:
         vocab = korean_vocab
     category = urllib.parse.unquote(category)  # Decode URL-encoded category name
-    if category in vocab:
-        word = random.choice(list(vocab[category].items()))
-        return jsonify({'japanese': word[0], 'english': word[1]})
-    else:
-        return jsonify({"error": "Category not found"}), 404
+    word = random.choice(list(vocab[category].items()))
+    return jsonify({'japanese': word[0], 'english': word[1]})
 
 if __name__ == '__main__':
     app.run(debug=True)
