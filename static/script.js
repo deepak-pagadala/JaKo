@@ -5,7 +5,7 @@ let fallingWords = [];
 let correctWords = [];
 let incorrectWords = [];
 let totalWords = 0;
-let wordSpeed = 0.5; // Falling speed
+let wordSpeed = 0.4; // Falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 1; // Number of words to drop at a time
@@ -14,8 +14,8 @@ let answeredWords = []; // Keep track of correctly answered words in the current
 
 const config = {
     type: Phaser.AUTO,
-    width: window.innerWidth - 150,
-    height: window.innerHeight - 250, // Adjust height for header and footer
+    width: window.innerWidth,
+    height: window.innerHeight - 300, // Adjust height for header and footer
     parent: 'game-container',
     transparent: true, // Make the game background transparent
     scene: {
@@ -28,7 +28,7 @@ const config = {
 const game = new Phaser.Game(config);
 
 window.addEventListener('resize', () => {
-    game.scale.resize(window.innerWidth, window.innerHeight - 250);
+    game.scale.resize(window.innerWidth, window.innerHeight - 300);
 });
 
 function preload() {
@@ -39,6 +39,10 @@ function preload() {
 function create() {
     console.log('Creating game...');
     fetchAllWords();
+
+    // Play background music
+    const backgroundMusic = document.getElementById('background-music');
+    backgroundMusic.play();
 }
 
 function update() {
@@ -66,7 +70,7 @@ function update() {
 
 function updateLivesDisplay() {
     for (let i = 1; i <= 3; i++) {
-        document.getElementById(`heart${i}`).src = i <= lives ? '/static/heart-full.png' : '/static/heart-empty.png';
+        document.getElementById(`heart${i}`).src = i <= lives ? '/static/images/heart-full.png' : '/static/images/heart-empty.png';
     }
 }
 
@@ -82,6 +86,8 @@ function fetchAllWords() {
 }
 
 function fetchWords() {
+    if (isPaused) return; // Do not fetch words when the game is paused
+
     currentWords = [];
     answeredWords = [];
     fallingWords.forEach(fallingWord => {
@@ -99,8 +105,6 @@ function fetchWords() {
                 const wordData = incorrectWords.shift();
                 currentWords.push(wordData);
                 addFallingWord(wordData.japanese, wordData.english);
-                speakWord(wordData.japanese);
-                showRepeatLabel(true);
                 fetchWordIndex++;
                 setTimeout(fetchNextWord, wordDropDelay);
             } else {
@@ -111,13 +115,9 @@ function fetchWords() {
                             currentWords.push(data);
                             if (mode === 'english') {
                                 addFallingWord(data.japanese, data.english);
-                                speakWord(data.japanese);
                             } else {
                                 addFallingWord(data.english, data.japanese);
-                                speakWord(data.english);
                             }
-                            showRepeatLabel(false);
-                            console.log('Fetched word:', data.japanese);
                             fetchWordIndex++;
                             setTimeout(fetchNextWord, wordDropDelay);
                         }
@@ -134,6 +134,13 @@ function addFallingWord(word, translation) {
     const textWidth = textObj.width;
     const x = Phaser.Math.Between(100, game.config.width - 100);
     textObj.setPosition(x, 0);
+
+    // Add event listener to speak the word when clicked
+    textObj.setInteractive();
+    textObj.on('pointerdown', () => {
+        speakWord(word);
+    });
+
     fallingWords.push(textObj);
 }
 
@@ -172,10 +179,11 @@ function checkAnswer() {
             score++;
             document.getElementById('score').textContent = `Score: ${score}`;
             correctWords.push(...answeredWords);
-            if (score !== 0 && score % 2 === 0) { // Double the wordsToDrop after every 2 correct answers
-                wordsToDrop *= 2;
+            if (score !== 0 && score % 2 === 0) { // Show level-up notification every 3 correct answers
+                showLevelUpNotification();
+            } else {
+                setTimeout(fetchWords, 500); // Fetch next words after a short delay
             }
-            setTimeout(fetchWords, 500); // Fetch next words after a short delay
         }
     } else {
         input.classList.add('incorrect');
@@ -219,6 +227,18 @@ function showCorrectAnswer() {
     }, 3000); // Show correct answer for 3 seconds
 }
 
+function showLevelUpNotification() {
+    isPaused = true;
+    const levelUpDiv = document.getElementById('level-up-notification');
+    levelUpDiv.style.display = 'block';
+    setTimeout(() => {
+        levelUpDiv.style.display = 'none';
+        wordsToDrop *= 2; // Double the number of words to drop
+        isPaused = false;
+        fetchWords();
+    }, 3000); // Show level-up notification for 3 seconds
+}
+
 function speakWord(word) {
     const utterance = new SpeechSynthesisUtterance(word);
     utterance.lang = language === 'japanese' ? 'ja-JP' : 'ko-KR';
@@ -237,7 +257,7 @@ function showRepeatLabel(isRepeat) {
 function resetGame() {
     score = 0;
     lives = 3;
-    wordSpeed = 0.5; // Reset speed
+    wordSpeed = 0.4; // Reset speed
     wordsToDrop = 1; // Reset the number of words to drop
     correctWords = [];
     incorrectWords = [];
