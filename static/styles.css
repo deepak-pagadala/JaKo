@@ -220,3 +220,42 @@ h1 {
     height: auto;
 }
 
+/* Add these styles to your existing styles.css file */
+
+#rules-container {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.8);
+    color: white;
+    border-radius: 10px;
+}
+
+#rules-container h1 {
+    font-size: 2em;
+    margin-bottom: 20px;
+}
+
+#rules-container p {
+    font-size: 1.2em;
+    margin: 10px 0;
+}
+
+#rules-container .btn {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #2bb5ff;
+    color: white;
+    text-align: center;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 1.2em;
+    cursor: pointer;
+    margin-top: 20px;
+}
+
+#rules-container .btn:hover {
+    background-color: #1a8cd8;
+}
+
