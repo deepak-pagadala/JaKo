@@ -42,7 +42,10 @@ def get_all_words(language, category):
     else:
         vocab = korean_vocab
     category = urllib.parse.unquote(category)  # Decode URL-encoded category name
-    return jsonify(vocab[category])
+    if category in vocab:
+        return jsonify(vocab[category])
+    else:
+        return jsonify({"error": "Category not found"}), 404
 
 @app.route('/get_word/<language>/<category>')
 def get_word(language, category):
@@ -51,8 +54,11 @@ def get_word(language, category):
     else:
         vocab = korean_vocab
     category = urllib.parse.unquote(category)  # Decode URL-encoded category name
-    word = random.choice(list(vocab[category].items()))
-    return jsonify({'japanese': word[0], 'english': word[1]})
+    if category in vocab:
+        word = random.choice(list(vocab[category].items()))
+        return jsonify({'japanese': word[0], 'english': word[1]})
+    else:
+        return jsonify({"error": "Category not found"}), 404
 
 if __name__ == '__main__':
     app.run(debug=True)
