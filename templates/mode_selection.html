@@ -3,14 +3,14 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Select Mode - Learn {{ language|capitalize }} Vocabulary</title>
+    <title>Select Mode</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body>
     <div class="container">
-        <h1>Select Mode</h1>
-        <a href="/rules/{{ language }}/{{ category }}/english" class="btn">Learn in English</a>
-        <a href="/rules/{{ language }}/{{ category }}/original" class="btn">Learn in {{ language|capitalize }}</a>
+        <h1>Select a Mode to Learn in {{ category|capitalize }}</h1>
+        <a href="/game/{{ language }}/{{ category|urlencode }}/english" class="btn">Learn in English</a>
+        <a href="/game/{{ language }}/{{ category|urlencode }}/original" class="btn">Learn in {{ language|capitalize }}</a>
         <a href="/category/{{ language }}" class="btn">Return to Categories</a>
     </div>
 </body>
