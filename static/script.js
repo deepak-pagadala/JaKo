@@ -179,7 +179,7 @@ function checkAnswer() {
             score++;
             document.getElementById('score').textContent = `Score: ${score}`;
             correctWords.push(...answeredWords);
-            if (score !== 0 && score % 2 === 0) { // Show level-up notification every 3 correct answers
+            if (score !== 0 && score % 3 === 0) { // Show level-up notification every 3 correct answers
                 showLevelUpNotification();
             } else {
                 setTimeout(fetchWords, 500); // Fetch next words after a short delay
