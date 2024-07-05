@@ -29,11 +29,11 @@ def mode_selection(language, category):
 
 @app.route('/rules/<language>/<category>/<mode>')
 def rules(language, category, mode):
-    return render_template('rules.html', language=language, category=category, mode=mode)
+    return render_template('rules.html', language=language, category=urllib.parse.unquote(category), mode=mode)
 
 @app.route('/game/<language>/<category>/<mode>')
 def game(language, category, mode):
-    return render_template('game.html', language=language, category=category, mode=mode)
+    return render_template('game.html', language=language, category=urllib.parse.unquote(category), mode=mode)
 
 @app.route('/get_all_words/<language>/<category>')
 def get_all_words(language, category):
