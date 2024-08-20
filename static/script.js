@@ -15,7 +15,7 @@ let answeredWords = []; // Keep track of correctly answered words in the current
 const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
-    height: window.innerHeight - 300, // Adjust height for header and footer
+    height: window.innerHeight - 200, // Adjust height for header and footer
     parent: 'game-container',
     transparent: true, // Make the game background transparent
     scene: {
@@ -69,8 +69,10 @@ function update() {
 }
 
 function updateLivesDisplay() {
+    const lifeImage = language === 'japanese' ? '/static/images/lives/bamboo.png' : '/static/images/lives/crown.png';
+    const emptyLifeImage = language === 'japanese' ? '/static/images/lives/bamboo_lost.png' : '/static/images/lives/crown_lost.png'; // Assuming you have an "empty.png" for when lives are lost
     for (let i = 1; i <= 3; i++) {
-        document.getElementById(`heart${i}`).src = i <= lives ? '/static/heart-full.png' : '/static/heart-empty.png';
+        document.getElementById(`heart${i}`).src = i <= lives ? lifeImage : emptyLifeImage;
     }
 }
 

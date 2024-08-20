@@ -6,9 +6,9 @@
     <title>Select Mode</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
-<body>
+<body class="bg-common">
     <div class="container">
-        <h1>Select a Mode to Learn in {{ category|capitalize }}</h1>
+        <h1 >Select a Mode to Learn in {{ category|capitalize }}</h1>
         <a href="/rules/{{ language }}/{{ category|urlencode }}/english" class="btn">Learn in English</a>
         <a href="/rules/{{ language }}/{{ category|urlencode }}/original" class="btn">Learn in {{ language|capitalize }}</a>
         <a href="/category/{{ language }}" class="btn">Return to Categories</a>

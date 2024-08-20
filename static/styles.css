@@ -3,54 +3,87 @@
 body {
     font-family: 'Press Start 2P', cursive;
     text-align: center;
-    background-color: rgba(255, 255, 255, 0.8);
-    background: url('/static/bg.png') no-repeat center center fixed;
+    background-color: #000;
+    /* Fallback background color to confirm if the issue is with the image */
+    background-image: url("{{ url_for('static', filename='images/' + ('japanese_bg.jpg' if language == 'japanese' else 'korean_bg.jpg')) }}");
     background-size: cover;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden; /* Prevent scrolling */
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: white;
+    overflow: hidden;
+}
+
+.bg-common {
+    background-image: url("/static/images/backgrounds/bg.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: white;
+}
+
+.bg-japanese {
+    background-image: url("/static/images/backgrounds/japanese_bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: white;
+}
+
+.bg-korean {
+    background-image: url("/static/images/backgrounds/korean_bg.jpg");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
     color: white;
 }
 
 .container {
-    flex: 1; /* Allow container to take up available space */
-    overflow-y: auto; /* Enable vertical scrolling */
+    flex: 1;
+    /* Allow container to take up available space */
+    overflow-y: auto;
+    /* Enable vertical scrolling */
     padding: 20px;
 }
 
 h1 {
-    font-size: 1.2em; /* Smaller font size for heading */
+    font-size: 1.2em;
+    /* Smaller font size for heading */
     margin: 10px 0;
     color: white;
 }
 
 .category-buttons {
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
     gap: 10px; /* Space between buttons */
 }
 
 .btn {
     display: inline-block;
-    padding: 8px 16px; /* Smaller padding for buttons */
+    padding: 8px 16px;
+    /* Smaller padding for buttons */
     margin: 8px;
-    background-color: transparent;
-    color: white;
+    background-color: white;
+    color: rgb(0, 0, 0);
     text-decoration: none;
     border-radius: 5px;
-    font-size: 0.8em; /* Smaller font size for buttons */
-    border: 2px solid white;
+    font-size: 0.8em;
+    /* Smaller font size for buttons */
+    border: 2px solid rgb(0, 0, 0);
     font-family: 'Press Start 2P', cursive;
-    transition: transform 0.2s ease-in-out; /* Add transition for transform */
+    transition: transform 0.2s ease-in-out;
+    /* Add transition for transform */
 }
 
 .btn:hover {
     background-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-5px); /* Move up slightly on hover */
+    transform: translateY(-5px);
+    /* Move up slightly on hover */
 }
 
 #score-board {
@@ -61,22 +94,33 @@ h1 {
 }
 
 #score {
-    font-size: 1em; /* Smaller font size for score */
+    font-size: 1em;
+    /* Smaller font size for score */
     margin-top: 5px;
-    color: white;
+    color: rgb(0, 0, 0);
 }
 
 #lives {
-    font-size: 1em; /* Smaller font size for lives */
+    font-size: 1em;
+    /* Smaller font size for lives */
     margin-bottom: 5px;
-    color: white;
+    color: rgb(0, 0, 0);
+}
+
+.life {
+    width: 32px; /* Adjust size as needed */
+    height: 32px;
+    margin-left: 5px;
+    visibility: visible; /* All lives are visible at the start */
 }
 
 #game-container {
-    flex: 1; /* Take up the remaining space */
+    flex: 1;
+    /* Take up the remaining space */
     position: relative;
     background-color: transparent;
-    margin-bottom: 0; /* Remove previous margin */
+    margin-bottom: 0;
+    /* Remove previous margin */
 }
 
 #input-area {
@@ -84,7 +128,8 @@ h1 {
     justify-content: center;
     align-items: center;
     position: absolute;
-    bottom: 150px; /* Position above the footer */
+    bottom: 150px;
+    /* Position above the footer */
     left: 0;
     right: 0;
 }
@@ -95,7 +140,8 @@ h1 {
     justify-content: center;
     align-items: center;
     position: absolute;
-    bottom: 0px; /* Adjusted position */
+    bottom: 0px;
+    /* Adjusted position */
     left: 0;
     right: 0;
 }
@@ -108,32 +154,38 @@ h1 {
 }
 
 #answer-input {
-    padding: 8px; /* Smaller padding for input */
-    font-size: 0.8em; /* Smaller font size for input */
+    padding: 8px;
+    /* Smaller padding for input */
+    font-size: 0.8em;
+    /* Smaller font size for input */
     width: 70%;
     max-width: 300px;
-    border: 2px solid white;
+    border: 2px solid rgb(0, 0, 0);
     border-radius: 5px;
-    background-color: transparent;
-    color: white;
+    background-color: white;
+    color: rgb(0, 0, 0);
     font-family: 'Press Start 2P', cursive;
 }
 
 #submit-btn {
-    padding: 8px; /* Smaller padding for submit button */
-    font-size: 0.8em; /* Smaller font size for submit button */
+    padding: 8px;
+    /* Smaller padding for submit button */
+    font-size: 0.8em;
+    /* Smaller font size for submit button */
     margin-left: 10px;
-    background-color: transparent;
-    color: white;
-    border: 2px solid white;
+    background-color: white;
+    color: rgb(0, 0, 0);
+    border: 2px solid rgb(0, 0, 0);
     border-radius: 5px;
     font-family: 'Press Start 2P', cursive;
-    transition: transform 0.2s ease-in-out; /* Add transition for transform */
+    transition: transform 0.2s ease-in-out;
+    /* Add transition for transform */
 }
 
 #submit-btn:hover {
     background-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-5px); /* Move up slightly on hover */
+    transform: translateY(-5px);
+    /* Move up slightly on hover */
 }
 
 .correct {
@@ -145,50 +197,63 @@ h1 {
 }
 
 #correct-answer {
-    font-size: 0.8em; /* Smaller font size for correct answer display */
-    color: white;
+    font-size: 0.8em;
+    /* Smaller font size for correct answer display */
+    color: rgb(0, 0, 0);
     font-family: 'Press Start 2P', cursive;
 }
 
 @media (max-width: 600px) {
     h1 {
-        font-size: 1em; /* Smaller font size for heading on small screens */
+        font-size: 1em;
+        /* Smaller font size for heading on small screens */
     }
 
     .btn {
-        font-size: 0.7em; /* Smaller font size for buttons on small screens */
-        padding: 6px 12px; /* Smaller padding for buttons on small screens */
+        font-size: 0.7em;
+        /* Smaller font size for buttons on small screens */
+        padding: 6px 12px;
+        /* Smaller padding for buttons on small screens */
     }
 
     #answer-input {
-        font-size: 0.7em; /* Smaller font size for input on small screens */
+        font-size: 0.7em;
+        /* Smaller font size for input on small screens */
         width: 60%;
     }
 
     #submit-btn {
-        font-size: 0.7em; /* Smaller font size for submit button on small screens */
-        padding: 6px; /* Smaller padding for submit button on small screens */
+        font-size: 0.7em;
+        /* Smaller font size for submit button on small screens */
+        padding: 6px;
+        /* Smaller padding for submit button on small screens */
     }
 
     #score-board {
-        top: 5px; /* Adjust top position for smaller screens */
-        right: 5px; /* Adjust right position for smaller screens */
+        top: 5px;
+        /* Adjust top position for smaller screens */
+        right: 5px;
+        /* Adjust right position for smaller screens */
     }
 
     #score {
-        font-size: 0.7em; /* Smaller font size for score on small screens */
+        font-size: 0.7em;
+        /* Smaller font size for score on small screens */
     }
 
     #lives {
-        font-size: 0.7em; /* Smaller font size for lives on small screens */
+        font-size: 0.7em;
+        /* Smaller font size for lives on small screens */
     }
 
     #input-area {
-        bottom: 120px; /* Adjust position for smaller screens */
+        bottom: 120px;
+        /* Adjust position for smaller screens */
     }
 
     #footer {
-        height: 80px; /* Adjust height for smaller screens */
+        height: 80px;
+        /* Adjust height for smaller screens */
         bottom: 0px;
     }
 }
@@ -205,6 +270,7 @@ h1 {
     height: 32px;
     margin: 0 5px;
 }
+
 #level-up-notification {
     position: absolute;
     top: 50%;
@@ -220,234 +286,15 @@ h1 {
     height: auto;
 }
 
-@import url('https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap');
 
-body {
-    font-family: 'Press Start 2P', cursive;
-    text-align: center;
-    background-color: rgba(255, 255, 255, 0.8);
-    background: url('/static/bg.png') no-repeat center center fixed;
-    background-size: cover;
-    margin: 0;
-    padding: 0;
-    display: flex;
-    flex-direction: column;
-    height: 100vh;
-    overflow: hidden; /* Prevent scrolling */
-    color: white;
-}
-
-.container {
-    flex: 1; /* Allow container to take up available space */
-    overflow-y: auto; /* Enable vertical scrolling */
-    padding: 20px;
-}
-
-h1 {
-    font-size: 1.2em; /* Smaller font size for heading */
-    margin: 10px 0;
-    color: white;
-}
-
-.category-buttons {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 10px; /* Space between buttons */
-}
-
-.btn {
-    display: inline-block;
-    padding: 8px 16px; /* Smaller padding for buttons */
-    margin: 8px;
-    background-color: transparent;
-    color: white;
-    text-decoration: none;
-    border-radius: 5px;
-    font-size: 0.8em; /* Smaller font size for buttons */
-    border: 2px solid white;
-    font-family: 'Press Start 2P', cursive;
-    transition: transform 0.2s ease-in-out; /* Add transition for transform */
-}
-
-.btn:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-5px); /* Move up slightly on hover */
-}
-
-#score-board {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    text-align: right;
-}
-
-#score {
-    font-size: 1em; /* Smaller font size for score */
-    margin-top: 5px;
-    color: white;
-}
-
-#lives {
-    font-size: 1em; /* Smaller font size for lives */
-    margin-bottom: 5px;
-    color: white;
-}
-
-#game-container {
-    flex: 1; /* Take up the remaining space */
-    position: relative;
-    background-color: transparent;
-    margin-bottom: 0; /* Remove previous margin */
-}
-
-#input-area {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    bottom: 150px; /* Position above the footer */
-    left: 0;
-    right: 0;
-}
-
-#footer {
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    position: absolute;
-    bottom: 0px; /* Adjusted position */
-    left: 0;
-    right: 0;
-}
-
-#input-container {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-top: 10px;
-}
-
-#answer-input {
-    padding: 8px; /* Smaller padding for input */
-    font-size: 0.8em; /* Smaller font size for input */
-    width: 70%;
-    max-width: 300px;
-    border: 2px solid white;
-    border-radius: 5px;
-    background-color: transparent;
-    color: white;
-    font-family: 'Press Start 2P', cursive;
-}
-
-#submit-btn {
-    padding: 8px; /* Smaller padding for submit button */
-    font-size: 0.8em; /* Smaller font size for submit button */
-    margin-left: 10px;
-    background-color: transparent;
-    color: white;
-    border: 2px solid white;
-    border-radius: 5px;
-    font-family: 'Press Start 2P', cursive;
-    transition: transform 0.2s ease-in-out; /* Add transition for transform */
-}
-
-#submit-btn:hover {
-    background-color: rgba(255, 255, 255, 0.2);
-    transform: translateY(-5px); /* Move up slightly on hover */
-}
-
-.correct {
-    background-color: green;
-}
-
-.incorrect {
-    background-color: red;
-}
-
-#correct-answer {
-    font-size: 0.8em; /* Smaller font size for correct answer display */
-    color: white;
-    font-family: 'Press Start 2P', cursive;
-}
-
-@media (max-width: 600px) {
-    h1 {
-        font-size: 1em; /* Smaller font size for heading on small screens */
-    }
-
-    .btn {
-        font-size: 0.7em; /* Smaller font size for buttons on small screens */
-        padding: 6px 12px; /* Smaller padding for buttons on small screens */
-    }
-
-    #answer-input {
-        font-size: 0.7em; /* Smaller font size for input on small screens */
-        width: 60%;
-    }
-
-    #submit-btn {
-        font-size: 0.7em; /* Smaller font size for submit button on small screens */
-        padding: 6px; /* Smaller padding for submit button on small screens */
-    }
-
-    #score-board {
-        top: 5px; /* Adjust top position for smaller screens */
-        right: 5px; /* Adjust right position for smaller screens */
-    }
-
-    #score {
-        font-size: 0.7em; /* Smaller font size for score on small screens */
-    }
-
-    #lives {
-        font-size: 0.7em; /* Smaller font size for lives on small screens */
-    }
-
-    #input-area {
-        bottom: 120px; /* Adjust position for smaller screens */
-    }
-
-    #footer {
-        height: 80px; /* Adjust height for smaller screens */
-        bottom: 0px;
-    }
-}
-
-#lives {
-    font-size: 1em;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-}
-
-.heart {
-    width: 32px;
-    height: 32px;
-    margin: 0 5px;
-}
-#level-up-notification {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    padding: 20px;
-    z-index: 1000;
-    text-align: center;
-}
-
-#level-up-notification img {
-    width: 200px;
-    height: auto;
-}
+/* Add these styles to your existing styles.css file */
 
 #rules-container {
     max-width: 600px;
     margin: 0 auto;
     padding: 20px;
     background-color: rgba(0, 0, 0, 0.8);
-    color: white;
+    color: rgb(0, 0, 0);
     border-radius: 10px;
 }
 
@@ -466,7 +313,7 @@ h1 {
     width: 100%;
     padding: 10px;
     background-color: #2bb5ff;
-    color: white;
+    color: rgb(0, 0, 0);
     text-align: center;
     text-decoration: none;
     border-radius: 5px;
@@ -478,5 +325,3 @@ h1 {
 #rules-container .btn:hover {
     background-color: #1a8cd8;
 }
-
-

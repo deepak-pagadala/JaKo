@@ -1,47 +1,49 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Game - Learn {{ language|capitalize }} Vocabulary</title>
-    <link rel="stylesheet" href="/static/styles.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 </head>
-<body>
+
+<body class="{{ 'bg-japanese' if language == 'japanese' else 'bg-korean' }}">
     <div id="header">
         <h1>Learning {{ category|capitalize }} in {{ language|capitalize }}</h1>
         <div id="score-board">
             <div id="lives">
-                <img src="/static/heart-full.png" class="heart" id="heart1">
-                <img src="/static/heart-full.png" class="heart" id="heart2">
-                <img src="/static/heart-full.png" class="heart" id="heart3">
+                <img src="{{ url_for('static', filename='images/lives/' + ('bamboo.png' if language == 'japanese' else 'crown.png')) }}"class="heart" id="heart1">
+                <img src="{{ url_for('static', filename='images/lives/' + ('bamboo.png' if language == 'japanese' else 'crown.png')) }}"class="heart" id="heart2">
+                <img src="{{ url_for('static', filename='images/lives/' + ('bamboo.png' if language == 'japanese' else 'crown.png')) }}"class="heart" id="heart3">
+              
             </div>
             <div id="score">Score: 0</div>
         </div>
     </div>
     <div id="game-container" style="position: relative;">
-        <div id="repeat-label" style="display: none; position: absolute; top: 10px; right: 10px; background-color: yellow; padding: 5px;">Repeat Word</div>
+        <div id="repeat-label" style="display: none;">Repeat Word</div>
     </div>
-    <div id="input-area">
+    <div id="footer">
         <div id="input-container">
             <input type="text" id="answer-input" placeholder="Type your answer here" autofocus>
             <button id="submit-btn" class="btn">Submit</button>
+            <button id="reset-btn" class="btn">Reset</button>
+            <a href="/category/{{ language }}" class="btn">Return to Categories</a>
+            <a href="/language" class="btn">Return to Language Selection</a>
         </div>
     </div>
-    <div id="footer">
-        <button id="reset-btn" class="btn">Reset</button>
-        <a href="/category/{{ language }}" class="btn">Return to Categories</a>
-        <a href="/language" class="btn">Return to Language Selection</a>
-    </div>
     <div id="level-up-notification" style="display: none;">
-        <img src="/static/levelup.png" alt="Level Up!">
+        <img src="{{ url_for('static', filename='images/levelup.png') }}" alt="Level Up!">
     </div>
     <script>
         const language = "{{ language }}";
         const category = "{{ category }}";
-        const mode = "{{ mode }}";  // new variable to indicate the chosen mode
+        const mode = "{{ mode }}";
     </script>
-    <script src="/static/background-music.js"></script>
-    <script src="/static/phaser.min.js"></script>
-    <script src="/static/script.js"></script>
+    <script src="{{ url_for('static', filename='background-music.js') }}"></script>
+    <script src="{{ url_for('static', filename='phaser.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='script.js') }}"></script>
 </body>
+
 </html>
