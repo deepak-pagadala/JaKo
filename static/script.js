@@ -69,8 +69,8 @@ function update() {
 }
 
 function updateLivesDisplay() {
-    const lifeImage = language === 'japanese' ? '/static/lives/bamboo.png' : '/static/lives/crown.png';
-    const emptyLifeImage = language === 'japanese' ? '/static/lives/bamboo_lost.png' : '/static/lives/crown_lost.png'; // Assuming you have an "empty.png" for when lives are lost
+    const lifeImage = language === 'japanese' ? '/static/images/lives/bamboo.png' : '/static/images/lives/crown.png';
+    const emptyLifeImage = language === 'japanese' ? '/static/images/lives/bamboo_lost.png' : '/static/images/lives/crown_lost.png'; // Assuming you have an "empty.png" for when lives are lost
     for (let i = 1; i <= 3; i++) {
         document.getElementById(`heart${i}`).src = i <= lives ? lifeImage : emptyLifeImage;
     }
