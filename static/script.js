@@ -12,6 +12,13 @@ let wordsToDrop = 1; // Number of words to drop at a time
 let wordDropDelay = 2000; // Delay in milliseconds between dropping words
 let answeredWords = []; // Keep track of correctly answered words in the current set
 
+let characterX = 0; // Initial X position of the character
+const characterStep = (window.innerWidth - 100) / 7; // Total distance divided by 7
+const characterAnimationDuration = 3800; // Duration of movement animation in milliseconds
+
+let standingImage = language === 'japanese' ? '/static/images/characters/panda.png' : '/static/images/characters/tiger.png';
+let movingGif = language === 'japanese' ? '/static/images/characters/panda_moving.gif' : '/static/images/characters/tiger_moving.gif';
+
 const config = {
     type: Phaser.AUTO,
     width: window.innerWidth,
@@ -33,14 +40,13 @@ window.addEventListener('resize', () => {
 
 function preload() {
     console.log('Preloading assets...');
-    // Preload any assets if needed
 }
 
 function create() {
     console.log('Creating game...');
     fetchAllWords();
-
-    // Play background music
+    document.getElementById('character').style.left = `${characterX}px`;
+    document.getElementById('character').src = standingImage;
     const backgroundMusic = document.getElementById('background-music');
     backgroundMusic.play();
 }
@@ -59,7 +65,6 @@ function update() {
                     } else {
                         showCorrectAnswer();
                     }
-                    // Remove the word that reached the bottom
                     fallingWord.destroy();
                     fallingWords[index] = null;
                 }
@@ -70,7 +75,7 @@ function update() {
 
 function updateLivesDisplay() {
     const lifeImage = language === 'japanese' ? '/static/images/lives/bamboo.png' : '/static/images/lives/crown.png';
-    const emptyLifeImage = language === 'japanese' ? '/static/images/lives/bamboo_lost.png' : '/static/images/lives/crown_lost.png'; // Assuming you have an "empty.png" for when lives are lost
+    const emptyLifeImage = language === 'japanese' ? '/static/images/lives/bamboo_lost.png' : '/static/images/lives/crown_lost.png';
     for (let i = 1; i <= 3; i++) {
         document.getElementById(`heart${i}`).src = i <= lives ? lifeImage : emptyLifeImage;
     }
@@ -80,15 +85,15 @@ function fetchAllWords() {
     fetch(`/get_all_words/${language}/${encodeURIComponent(category)}`)
         .then(response => response.json())
         .then(data => {
-            const words = Object.keys(data).length; // Number of words fetched
-            console.log('Total words in this category:', words); // Log total words to the console
-            totalWords = words; // Assign to totalWords variable
+            const words = Object.keys(data).length;
+            console.log('Total words in this category:', words);
+            totalWords = words;
             fetchWords();
         });
 }
 
 function fetchWords() {
-    if (isPaused) return; // Do not fetch words when the game is paused
+    if (isPaused) return;
 
     currentWords = [];
     answeredWords = [];
@@ -103,7 +108,6 @@ function fetchWords() {
     function fetchNextWord() {
         if (fetchWordIndex < wordsToDrop) {
             if (repeatWordCounter >= 2 && incorrectWords.length > 0) {
-                // Reintroduce an incorrect word
                 const wordData = incorrectWords.shift();
                 currentWords.push(wordData);
                 addFallingWord(wordData.japanese, wordData.english);
@@ -133,11 +137,9 @@ function fetchWords() {
 
 function addFallingWord(word, translation) {
     const textObj = game.scene.scenes[0].add.text(0, 0, word, { font: '28px Press Start 2P', fill: '#fff' });
-    const textWidth = textObj.width;
     const x = Phaser.Math.Between(100, game.config.width - 100);
     textObj.setPosition(x, 0);
 
-    // Add event listener to speak the word when clicked
     textObj.setInteractive();
     textObj.on('pointerdown', () => {
         speakWord(word);
@@ -158,8 +160,8 @@ function checkAnswer() {
         input.classList.add('incorrect');
         setTimeout(() => {
             input.classList.remove('incorrect');
-        }, 500); // Briefly indicate incorrect input
-        return; // Ignore empty input
+        }, 500);
+        return;
     }
 
     const normalizedCurrentWords = currentWords.map(word => normalizeText(mode === 'english' ? word.english : word.japanese));
@@ -169,7 +171,7 @@ function checkAnswer() {
         input.classList.add('correct');
         setTimeout(() => {
             input.classList.remove('correct');
-        }, 500); // Briefly indicate correct input
+        }, 500);
         answeredWords.push(currentWords[index]);
         fallingWords[index].destroy();
         fallingWords[index] = null;
@@ -177,14 +179,16 @@ function checkAnswer() {
         fallingWords.splice(index, 1);
         input.value = '';
 
+        moveCharacter(); // Move the character on correct answer
+
         if (answeredWords.length === wordsToDrop) {
             score++;
             document.getElementById('score').textContent = `Score: ${score}`;
             correctWords.push(...answeredWords);
-            if (score !== 0 && score % 3 === 0) { // Show level-up notification every 3 correct answers
+            if (score !== 0 && score % 7 === 0) {
                 showLevelUpNotification();
             } else {
-                setTimeout(fetchWords, 500); // Fetch next words after a short delay
+                setTimeout(fetchWords, 500);
             }
         }
     } else {
@@ -203,6 +207,26 @@ function checkAnswer() {
     }
 }
 
+function moveCharacter() {
+    const character = document.getElementById('character');
+    character.src = movingGif; // Set to moving GIF
+    character.style.width = '100px';
+    character.style.height = '100px';
+    
+    const newPosition = characterX + characterStep;
+    
+    character.style.transition = `left ${characterAnimationDuration}ms ease-in-out`;
+    character.style.left = `${newPosition}px`;
+
+    setTimeout(() => {
+        character.src = standingImage; // Revert to standing image
+        character.style.width = '100px';
+        character.style.height = '100px';
+    }, characterAnimationDuration); 
+    
+    characterX = newPosition; // Update the character's position
+}
+
 function showCorrectAnswer() {
     isPaused = true;
     const correctAnswerDiv = document.createElement('div');
@@ -219,14 +243,13 @@ function showCorrectAnswer() {
     correctAnswerDiv.style.zIndex = '1000';
     document.getElementById('game-container').appendChild(correctAnswerDiv);
 
-    // Speak the original words
     currentWords.forEach(word => speakWord(mode === 'english' ? word.japanese : word.english));
 
     setTimeout(() => {
         correctAnswerDiv.remove();
         isPaused = false;
         fetchWords();
-    }, 3000); // Show correct answer for 3 seconds
+    }, 3000);
 }
 
 function showLevelUpNotification() {
@@ -235,10 +258,10 @@ function showLevelUpNotification() {
     levelUpDiv.style.display = 'block';
     setTimeout(() => {
         levelUpDiv.style.display = 'none';
-        wordsToDrop *= 2; // Double the number of words to drop
+        wordsToDrop *= 2;
         isPaused = false;
         fetchWords();
-    }, 3000); // Show level-up notification for 3 seconds
+    }, 3000);
 }
 
 function speakWord(word) {
@@ -247,27 +270,21 @@ function speakWord(word) {
     window.speechSynthesis.speak(utterance);
 }
 
-function showRepeatLabel(isRepeat) {
-    const repeatLabel = document.getElementById('repeat-label');
-    if (isRepeat) {
-        repeatLabel.style.display = 'block';
-    } else {
-        repeatLabel.style.display = 'none';
-    }
-}
-
 function resetGame() {
     score = 0;
     lives = 3;
-    wordSpeed = 0.4; // Reset speed
-    wordsToDrop = 1; // Reset the number of words to drop
+    wordSpeed = 0.4;
+    wordsToDrop = 1;
     correctWords = [];
     incorrectWords = [];
     repeatWordCounter = 0;
-    answeredWords = []; // Reset answered words
+    answeredWords = [];
     isPaused = false;
+    characterX = 0; // Reset character position
+    document.getElementById('character').src = standingImage; // Reset to standing image
+    document.getElementById('character').style.left = `${characterX}px`; // Move character to starting position
     document.getElementById('score').textContent = `Score: ${score}`;
-    updateLivesDisplay(); // Ensure lives are displayed as hearts
+    updateLivesDisplay();
     fetchWords();
 }
 
