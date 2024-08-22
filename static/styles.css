@@ -97,7 +97,7 @@ h1 {
     font-size: 1em;
     /* Smaller font size for score */
     margin-top: 5px;
-    color: rgb(0, 0, 0);
+    color: rgb(255, 255, 255);
 }
 
 #lives {
@@ -108,8 +108,8 @@ h1 {
 }
 
 .life {
-    width: 32px; /* Adjust size as needed */
-    height: 32px;
+    width: 50px; /* Adjust size as needed */
+    height: 50px;
     margin-left: 5px;
     visibility: visible; /* All lives are visible at the start */
 }
@@ -266,8 +266,8 @@ h1 {
 }
 
 .heart {
-    width: 32px;
-    height: 32px;
+    width: 50px;
+    height: 50px;
     margin: 0 5px;
 }
 

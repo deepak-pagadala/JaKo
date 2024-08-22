@@ -13,15 +13,20 @@ let wordDropDelay = 2000; // Delay in milliseconds between dropping words
 let answeredWords = []; // Keep track of correctly answered words in the current set
 
 let characterX = 0; // Initial X position of the character
-const characterStep = (window.innerWidth - 100) / 7; // Total distance divided by 7
-const characterAnimationDuration = 3800; // Duration of movement animation in milliseconds
+const screenWidth = window.innerWidth - 100; // Screen width minus character width
+const characterStep = screenWidth / 7; // Total distance divided by 7
+const characterAnimationDuration = 2000; // Duration of movement animation in milliseconds
+let movingRight = true; // Track the direction of the character
 
 let standingImage = language === 'japanese' ? '/static/images/characters/panda.png' : '/static/images/characters/tiger.png';
 let movingGif = language === 'japanese' ? '/static/images/characters/panda_moving.gif' : '/static/images/characters/tiger_moving.gif';
 
+let objectImage = language === 'japanese' ? '/static/images/lives/bamboo.png' : '/static/images/lives/crown.png'; // Object to be caught by character
+let objectX = screenWidth; // Initial X position of the object
+
 const config = {
     type: Phaser.AUTO,
-    width: window.innerWidth,
+    width: screenWidth + 100, // Adjust width to account for character size
     height: window.innerHeight - 200, // Adjust height for header and footer
     parent: 'game-container',
     transparent: true, // Make the game background transparent
@@ -35,7 +40,7 @@ const config = {
 const game = new Phaser.Game(config);
 
 window.addEventListener('resize', () => {
-    game.scale.resize(window.innerWidth, window.innerHeight - 300);
+    game.scale.resize(screenWidth + 100, window.innerHeight - 300);
 });
 
 function preload() {
@@ -47,7 +52,14 @@ function create() {
     fetchAllWords();
     document.getElementById('character').style.left = `${characterX}px`;
     document.getElementById('character').src = standingImage;
+
+    // Set initial object position
+    document.getElementById('object').style.left = `${objectX}px`;
+    document.getElementById('object').src = objectImage;
+
+    // Play background music
     const backgroundMusic = document.getElementById('background-music');
+    backgroundMusic.volume = 0.075; // Set volume to 5%
     backgroundMusic.play();
 }
 
@@ -179,13 +191,15 @@ function checkAnswer() {
         fallingWords.splice(index, 1);
         input.value = '';
 
-        moveCharacter(); // Move the character on correct answer
-
         if (answeredWords.length === wordsToDrop) {
             score++;
             document.getElementById('score').textContent = `Score: ${score}`;
             correctWords.push(...answeredWords);
-            if (score !== 0 && score % 7 === 0) {
+
+            moveCharacter(); // Move the character on correct answer
+
+            if (score % 7 === 0) { // Show level-up notification after 7 correct answers
+                moveObject(); // Move the object to the opposite side
                 showLevelUpNotification();
             } else {
                 setTimeout(fetchWords, 500);
@@ -212,9 +226,16 @@ function moveCharacter() {
     character.src = movingGif; // Set to moving GIF
     character.style.width = '100px';
     character.style.height = '100px';
-    
-    const newPosition = characterX + characterStep;
-    
+
+    let newPosition = movingRight ? characterX + characterStep : characterX - characterStep;
+
+    // Ensure the character does not go beyond the screen boundaries
+    if (newPosition > screenWidth) {
+        newPosition = screenWidth;
+    } else if (newPosition < 0) {
+        newPosition = 0;
+    }
+
     character.style.transition = `left ${characterAnimationDuration}ms ease-in-out`;
     character.style.left = `${newPosition}px`;
 
@@ -222,10 +243,29 @@ function moveCharacter() {
         character.src = standingImage; // Revert to standing image
         character.style.width = '100px';
         character.style.height = '100px';
-    }, characterAnimationDuration); 
-    
-    characterX = newPosition; // Update the character's position
+
+        characterX = newPosition; // Update the character's position
+
+        // Flip character only after it reaches the end
+        if ((movingRight && characterX >= screenWidth) || (!movingRight && characterX <= 0)) {
+            flipCharacter();
+        }
+    }, characterAnimationDuration);
 }
+
+function moveObject() {
+    movingRight = !movingRight; // Flip the direction of the object movement
+    objectX = movingRight ? screenWidth : 0; // Move object to the opposite side
+    const object = document.getElementById('object');
+    object.style.left = `${objectX}px`; // Update the object's position
+}
+
+function flipCharacter() {
+    const character = document.getElementById('character');
+    movingRight = !movingRight;
+    character.style.transform = movingRight ? 'scaleX(1)' : 'scaleX(-1)';
+}
+
 
 function showCorrectAnswer() {
     isPaused = true;
@@ -280,16 +320,20 @@ function resetGame() {
     repeatWordCounter = 0;
     answeredWords = [];
     isPaused = false;
-    characterX = 0; // Reset character position
-    document.getElementById('character').src = standingImage; // Reset to standing image
-    document.getElementById('character').style.left = `${characterX}px`; // Move character to starting position
+    characterX = 0;
+    movingRight = true;
+    objectX = screenWidth;
+    document.getElementById('character').src = standingImage;
+    document.getElementById('character').style.left = `${characterX}px`;
+    document.getElementById('character').style.transform = 'scaleX(1)';
+    document.getElementById('object').style.left = `${objectX}px`;
     document.getElementById('score').textContent = `Score: ${score}`;
     updateLivesDisplay();
     fetchWords();
 }
 
 document.getElementById('submit-btn').addEventListener('click', checkAnswer);
-document.getElementById('answer-input').addEventListener('keypress', function(event) {
+document.getElementById('answer-input').addEventListener('keypress', function (event) {
     if (event.key === 'Enter') {
         checkAnswer();
     }
