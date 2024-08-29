@@ -5,18 +5,19 @@ let fallingWords = [];
 let correctWords = [];
 let incorrectWords = [];
 let totalWords = 0;
-let wordSpeed = 0.4; // Falling speed
+let wordSpeed = 0.5; // Falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 5; // Start with 5 words dropping at a time
 let wordDropDelay = 1250; // 1.5 seconds gap between dropping words
 let answeredWords = []; // Keep track of correctly answered words in the current set
 let setInProgress = false; // Track if a set is in progress
+let movementCount = 0; // Track how many times the character has moved in a set
 
 let characterX = 0; // Initial X position of the character
 const screenWidth = window.innerWidth - 100; // Screen width minus character width
 let characterStep; // Will be calculated based on wordsToDrop
-const characterAnimationDuration = 1000; // Duration of movement animation in milliseconds
+const characterAnimationDuration = 650; // Duration of movement animation in milliseconds
 let movingRight = true; // Track the direction of the character
 
 let standingImage = language === 'japanese' ? '/static/images/characters/panda.png' : '/static/images/characters/tiger.png';
@@ -72,10 +73,9 @@ function update() {
                 if (fallingWord.y > game.config.height) { // Height of the game area
                     lives--;
                     updateLivesDisplay();
+                    playWrongAnswerSound(); // Play wrong answer sound
                     if (lives <= 0) {
                         showGameOverScreen(); // Show game over screen
-                    } else {
-                        showCorrectAnswer();
                     }
                     fallingWord.destroy();
                     fallingWords[index] = null;
@@ -119,6 +119,7 @@ function fetchWords() {
     let fetchWordIndex = 0;
     characterStep = screenWidth / wordsToDrop; // Calculate character step based on words to drop
     setInProgress = true; // Mark the start of a new set
+    movementCount = 0; // Reset movement count
 
     function fetchNextWord() {
         if (fetchWordIndex < wordsToDrop) {
@@ -150,6 +151,13 @@ function fetchWords() {
     repeatWordCounter++;
 }
 
+function speakWord(word) {
+    const utterance = new SpeechSynthesisUtterance(word);
+    utterance.lang = language === 'japanese' ? 'ja-JP' : 'ko-KR';
+    window.speechSynthesis.speak(utterance);
+} 
+
+
 function addFallingWord(word, translation) {
     const textObj = game.scene.scenes[0].add.text(0, 0, word, { font: '28px Press Start 2P', fill: '#fff' });
     const x = Phaser.Math.Between(100, game.config.width - 100);
@@ -162,6 +170,7 @@ function addFallingWord(word, translation) {
 
     fallingWords.push(textObj);
 }
+
 
 function normalizeText(text) {
     return text.trim().toLowerCase().replace(/\s+/g, ' ');
@@ -194,43 +203,41 @@ function checkAnswer() {
         fallingWords.splice(index, 1);
         input.value = '';
 
-        moveCharacter(); // Move the character on each correct answer
+        moveCharacter(() => {
+            movementCount++; // Increment movement count
+            if (answeredWords.length === wordsToDrop) {
+                score++;
+                document.getElementById('score').textContent = `Score: ${score}`;
+                correctWords.push(...answeredWords);
+                setInProgress = false; // Mark the end of the current set
 
-        if (answeredWords.length === wordsToDrop) {
-            score++;
-            document.getElementById('score').textContent = `Score: ${score}`;
-            correctWords.push(...answeredWords);
-            setInProgress = false; // Mark the end of the current set
+                // Increase falling speed by 5% every 3 levels
+                if (score % 3 === 0) {
+                    wordSpeed += wordSpeed * 0.5;
+                }
 
-            // Increase falling speed by 5% every 3 levels
-            if (score % 1 === 0) {
-                wordSpeed += wordSpeed * 0.15;
+                if (movementCount === wordsToDrop) { // Ensure character completes its movement
+                    flipCharacter(); // Flip the character after completing the movement
+                    moveObject(); // Move the object to the opposite side
+                    wordsToDrop += 2; // Increase words dropping by 2 after each level up
+                    showLevelUpNotification();
+                }
             }
-
-            if (score % 1 === 0) { // Level up after each set of words
-                wordsToDrop += 2; // Increase words dropping by 2 at each level up
-                moveObject(); // Move the object to the opposite side
-                showLevelUpNotification();
-            } else {
-                setTimeout(fetchWords, 250);
-            }
-        }
+        }); // Move the character on each correct answer
     } else {
         input.classList.add('incorrect');
+        playWrongAnswerSound(); // Play wrong answer sound
         lives--;
         updateLivesDisplay();
         if (lives <= 0) {
             showGameOverScreen(); // Show game over screen
-        } else {
-            incorrectWords.push(...currentWords);
-            showCorrectAnswer();
         }
         input.value = '';
         input.classList.remove('correct', 'incorrect');
     }
 }
 
-function moveCharacter() {
+function moveCharacter(callback) {
     const character = document.getElementById('character');
     character.src = movingGif; // Set to moving GIF
     character.style.width = '100px';
@@ -255,17 +262,14 @@ function moveCharacter() {
 
         characterX = newPosition; // Update the character's position
 
-        // Flip character only after it reaches the end
-        if ((movingRight && characterX >= screenWidth) || (!movingRight && characterX <= 0)) {
-            flipCharacter();
-        }
+        callback(); // Call the callback after movement is complete
     }, characterAnimationDuration);
 }
 
 function moveObject() {
-    movingRight = !movingRight; // Flip the direction of the object movement
     objectX = movingRight ? screenWidth : 0; // Move object to the opposite side
     const object = document.getElementById('object');
+    object.style.transition = `left ${characterAnimationDuration}ms ease-in-out`;
     object.style.left = `${objectX}px`; // Update the object's position
 }
 
@@ -275,29 +279,10 @@ function flipCharacter() {
     character.style.transform = movingRight ? 'scaleX(1)' : 'scaleX(-1)';
 }
 
-function showCorrectAnswer() {
-    isPaused = true;
-    const correctAnswerDiv = document.createElement('div');
-    correctAnswerDiv.id = 'correct-answer';
-    correctAnswerDiv.innerHTML = `<p>Correct Answer: ${currentWords.map(word => `${word.japanese} - ${word.english}`).join(', ')}</p>`;
-    correctAnswerDiv.style.position = 'absolute';
-    correctAnswerDiv.style.top = '50%';
-    correctAnswerDiv.style.left = '50%';
-    correctAnswerDiv.style.transform = 'translate(-50%, -50%)';
-    correctAnswerDiv.style.backgroundColor = 'rgba(0, 0, 0, 0.8)';
-    correctAnswerDiv.style.color = '#fff';
-    correctAnswerDiv.style.padding = '20px';
-    correctAnswerDiv.style.borderRadius = '10px';
-    correctAnswerDiv.style.zIndex = '1000';
-    document.getElementById('game-container').appendChild(correctAnswerDiv);
-
-    currentWords.forEach(word => speakWord(mode === 'english' ? word.japanese : word.english));
-
-    setTimeout(() => {
-        correctAnswerDiv.remove();
-        isPaused = false;
-        fetchWords();
-    }, 1500);
+function playWrongAnswerSound() {
+    const wrongAnswerSound = new Audio('/static/audio/wrongans.mp3');
+    wrongAnswerSound.volume = 0.03
+    wrongAnswerSound.play();
 }
 
 function showLevelUpNotification() {
@@ -335,16 +320,10 @@ function showGameOverScreen() {
     document.getElementById('play-again-btn').addEventListener('click', resetGame);
 }
 
-function speakWord(word) {
-    const utterance = new SpeechSynthesisUtterance(word);
-    utterance.lang = language === 'japanese' ? 'ja-JP' : 'ko-KR';
-    window.speechSynthesis.speak(utterance);
-}
-
 function resetGame() {
     score = 0;
     lives = 3;
-    wordSpeed = 0.4;
+    wordSpeed = 0.5;
     wordsToDrop = 5; // Reset to 5 words dropping at a time
     correctWords = [];
     incorrectWords = [];

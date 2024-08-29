@@ -21,6 +21,7 @@
         </div>
     </div>
 
+<<<<<<< Updated upstream
     <!-- Character Image -->
     <div id="game-container" style="position: relative;">
         <img id="character" 
@@ -34,6 +35,16 @@
         
         <div id="repeat-label" style="display: none;">Repeat Word</div>
     </div>
+=======
+   <!-- Character Image -->
+<div id="game-container" style="position: relative;">
+    <img id="character" 
+         src="{{ url_for('static', filename='images/characters/' + ('panda.png' if language == 'japanese' else 'tiger.png')) }}" 
+         style="position: absolute; bottom: -100px; left: 0; width: 100px; height: 100px;">
+    <div id="repeat-label" style="display: none;">Repeat Word</div>
+</div>
+
+>>>>>>> Stashed changes
 
     <div id="footer">
         <div id="input-container">
