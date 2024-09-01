@@ -9,15 +9,16 @@ let wordSpeed = 0.5; // Falling speed
 let repeatWordCounter = 0; // Counter to track when to reintroduce incorrect words
 let isPaused = false;
 let wordsToDrop = 5; // Start with 5 words dropping at a time
-let wordDropDelay = 1250; // 1.5 seconds gap between dropping words
+let wordDropDelay = 1000; // 1 second gap between dropping words
 let answeredWords = []; // Keep track of correctly answered words in the current set
 let setInProgress = false; // Track if a set is in progress
 let movementCount = 0; // Track how many times the character has moved in a set
+let missedWords = []; // Track missed words that need to be reintroduced
 
 let characterX = 0; // Initial X position of the character
 const screenWidth = window.innerWidth - 100; // Screen width minus character width
 let characterStep; // Will be calculated based on wordsToDrop
-const characterAnimationDuration = 650; // Duration of movement animation in milliseconds
+const characterAnimationDuration = 500; // Duration of movement animation in milliseconds
 let movingRight = true; // Track the direction of the character
 
 let standingImage = language === 'japanese' ? '/static/images/characters/panda.png' : '/static/images/characters/tiger.png';
@@ -76,6 +77,9 @@ function update() {
                     playWrongAnswerSound(); // Play wrong answer sound
                     if (lives <= 0) {
                         showGameOverScreen(); // Show game over screen
+                    } else {
+                        missedWords.push(currentWords[index]); // Add missed word to be reintroduced
+                        reintroduceMissedWord(); // Reintroduce the missed word immediately
                     }
                     fallingWord.destroy();
                     fallingWords[index] = null;
@@ -157,7 +161,6 @@ function speakWord(word) {
     window.speechSynthesis.speak(utterance);
 } 
 
-
 function addFallingWord(word, translation) {
     const textObj = game.scene.scenes[0].add.text(0, 0, word, { font: '28px Press Start 2P', fill: '#fff' });
     const x = Phaser.Math.Between(100, game.config.width - 100);
@@ -175,6 +178,29 @@ function addFallingWord(word, translation) {
 function normalizeText(text) {
     return text.trim().toLowerCase().replace(/\s+/g, ' ');
 }
+function reintroduceMissedWord() {
+    if (missedWords.length > 0) {
+        const wordData = missedWords.shift(); // Get the missed word
+        currentWords.push(wordData); // Add the missed word back to currentWords
+        addFallingWord(mode === 'english' ? wordData.japanese : wordData.english, mode === 'english' ? wordData.english : wordData.japanese);
+    }
+}
+
+function addFallingWord(word, translation) {
+    const textObj = game.scene.scenes[0].add.text(0, 0, word, { font: '28px Press Start 2P', fill: '#fff' });
+    const x = Phaser.Math.Between(100, game.config.width - 100);
+    textObj.setPosition(x, 0);
+
+    textObj.setInteractive();
+    textObj.on('pointerdown', () => {
+        speakWord(word);
+    });
+
+    fallingWords.push(textObj); // Add to fallingWords array
+
+    // Associate the falling word with its correct answer
+    textObj.correctAnswer = translation;
+}
 
 function checkAnswer() {
     const input = document.getElementById('answer-input');
@@ -188,54 +214,64 @@ function checkAnswer() {
         return;
     }
 
-    const normalizedCurrentWords = currentWords.map(word => normalizeText(mode === 'english' ? word.english : word.japanese));
-    const index = normalizedCurrentWords.indexOf(answer);
+    let found = false;
+    for (let i = 0; i < fallingWords.length; i++) {
+        const fallingWord = fallingWords[i];
+        if (fallingWord && normalizeText(fallingWord.correctAnswer) === answer) {
+            input.classList.add('correct');
+            setTimeout(() => {
+                input.classList.remove('correct');
+            }, 500);
 
-    if (index !== -1) {
-        input.classList.add('correct');
-        setTimeout(() => {
-            input.classList.remove('correct');
-        }, 500);
-        answeredWords.push(currentWords[index]);
-        fallingWords[index].destroy();
-        fallingWords[index] = null;
-        currentWords.splice(index, 1);
-        fallingWords.splice(index, 1);
-        input.value = '';
+            answeredWords.push(currentWords[i]);
+            fallingWord.destroy();
+            fallingWords[i] = null;
+            currentWords.splice(i, 1);
+            fallingWords.splice(i, 1);
+            input.value = '';
 
-        moveCharacter(() => {
-            movementCount++; // Increment movement count
-            if (answeredWords.length === wordsToDrop) {
-                score++;
-                document.getElementById('score').textContent = `Score: ${score}`;
-                correctWords.push(...answeredWords);
-                setInProgress = false; // Mark the end of the current set
+            moveCharacter(() => {
+                movementCount++; // Increment movement count
+                if (answeredWords.length === wordsToDrop) {
+                    score++;
+                    document.getElementById('score').textContent = `Score: ${score}`;
+                    correctWords.push(...answeredWords);
+                    setInProgress = false; // Mark the end of the current set
 
-                // Increase falling speed by 5% every 3 levels
-                if (score % 3 === 0) {
-                    wordSpeed += wordSpeed * 0.5;
+                    // Increase falling speed by 5% every 3 levels
+                    if (score % 2 === 0) {
+                        wordSpeed += wordSpeed * 0.2;
+                    }
+
+                    if (movementCount === wordsToDrop) { // Ensure character completes its movement
+                        flipCharacter(); // Flip the character after completing the movement
+                        moveObject(); // Move the object to the opposite side
+                        wordsToDrop += 2; // Increase words dropping by 2 after each level up
+                        showLevelUpNotification();
+                    }
                 }
+            }); // Move the character on each correct answer
 
-                if (movementCount === wordsToDrop) { // Ensure character completes its movement
-                    flipCharacter(); // Flip the character after completing the movement
-                    moveObject(); // Move the object to the opposite side
-                    wordsToDrop += 2; // Increase words dropping by 2 after each level up
-                    showLevelUpNotification();
-                }
-            }
-        }); // Move the character on each correct answer
-    } else {
+            found = true; // Mark that the correct word was found
+            break; // Exit the loop to ensure only one word is removed
+        }
+    }
+
+    if (!found) {
         input.classList.add('incorrect');
         playWrongAnswerSound(); // Play wrong answer sound
         lives--;
         updateLivesDisplay();
         if (lives <= 0) {
             showGameOverScreen(); // Show game over screen
+        } else if (currentWords.length > 0) {
+            reintroduceMissedWord(); // Reintroduce missed word if any left
         }
         input.value = '';
         input.classList.remove('correct', 'incorrect');
     }
 }
+
 
 function moveCharacter(callback) {
     const character = document.getElementById('character');
@@ -281,7 +317,7 @@ function flipCharacter() {
 
 function playWrongAnswerSound() {
     const wrongAnswerSound = new Audio('/static/audio/wrongans.mp3');
-    wrongAnswerSound.volume = 0.03
+    wrongAnswerSound.volume = 0.1;
     wrongAnswerSound.play();
 }
 
@@ -329,6 +365,7 @@ function resetGame() {
     incorrectWords = [];
     repeatWordCounter = 0;
     answeredWords = [];
+    missedWords = []; // Clear missed words on reset
     isPaused = false;
     characterX = 0;
     movingRight = true;
