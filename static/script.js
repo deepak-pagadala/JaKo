@@ -334,6 +334,9 @@ function showLevelUpNotification() {
 
 function showGameOverScreen() {
     isPaused = true; // Pause the game
+    setInProgress = true; // Stop any word sets from being processed
+    document.getElementById('answer-input').disabled = true; // Disable input field
+
     const gameOverDiv = document.createElement('div');
     gameOverDiv.id = 'game-over';
     gameOverDiv.innerHTML = `
@@ -367,10 +370,12 @@ function resetGame() {
     answeredWords = [];
     missedWords = []; // Clear missed words on reset
     isPaused = false;
+    setInProgress = false; // Allow new sets to start
     characterX = 0;
     movingRight = true;
     objectX = screenWidth;
-    setInProgress = false; // Reset the set progress
+    
+    document.getElementById('answer-input').disabled = false; // Re-enable input field
     document.getElementById('character').src = standingImage;
     document.getElementById('character').style.left = `${characterX}px`;
     document.getElementById('character').style.transform = 'scaleX(1)';
