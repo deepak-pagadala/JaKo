@@ -112,7 +112,7 @@ def submit_feedback():
 
         # Compose the email
         msg = Message(subject="New Feedback from JaKo",
-                      recipients=['ndeepak.p01@gmail.com'])  # Your business email
+                      recipients=['jako.type@gmail.com'])  # Your business email
         msg.body = f"User feedback: {feedback}\nRating: {rating}/5"
 
         # Send the email
