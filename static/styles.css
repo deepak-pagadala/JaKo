@@ -60,7 +60,8 @@ h1 {
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
-    gap: 10px; /* Space between buttons */
+    gap: 10px;
+    /* Space between buttons */
 }
 
 .btn {
@@ -108,10 +109,12 @@ h1 {
 }
 
 .life {
-    width: 50px; /* Adjust size as needed */
+    width: 50px;
+    /* Adjust size as needed */
     height: 50px;
     margin-left: 5px;
-    visibility: visible; /* All lives are visible at the start */
+    visibility: visible;
+    /* All lives are visible at the start */
 }
 
 #game-container {
@@ -324,4 +327,55 @@ h1 {
 
 #rules-container .btn:hover {
     background-color: #1a8cd8;
+}
+
+#feedback-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    background-color: #e0e0e060;
+    border-radius: 50%;
+    border: none;
+    color: white;
+    font-size: 24px;
+    text-align: center;
+    line-height: 50px;
+    cursor: pointer;
+}
+
+#feedback-form {
+    position: fixed;
+    bottom: 80px;
+    right: 20px;
+    background-color: rgba(56, 56, 56, 0.222);
+    padding: 20px;
+    width: 300px;
+    border-radius: 10px;
+    display: none;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+#feedback-text {
+    width: 100%;
+    height: 80px;
+    margin-bottom: 10px;
+}
+
+.star {
+    font-size: 24px;
+    color: #e6e6e6;
+    cursor: pointer;
+}
+
+#feedback-success {
+    display: none;
+    position: fixed;
+    bottom: 100px;
+    right: 20px;
+    background-color: #27ae60;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
 }

@@ -3,13 +3,106 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title >Language Learning App</title>
+    <title>Language Learning App</title>
     <link rel="stylesheet" href="/static/styles.css">
 </head>
 <body class="bg-common">
     <div class="container">
-        <h1 >Welcome to the Language Learning App</h1>
+        <h1>Welcome to JaKo - Language Learning App</h1>
         <a href="/language" class="btn">Start Learning</a>
     </div>
+
+    <!-- Feedback Button -->
+    <button id="feedback-btn">?</button>
+
+    <!-- Feedback Form -->
+    <div id="feedback-form">
+        <h4>Feedback</h4>
+        <p>Thank you for playing JaKo! We hope you're having fun. Let us know any suggestions or improvements!</p>
+        <textarea id="feedback-text" maxlength="100" placeholder="Type here..."></textarea>
+        <div id="rating">
+            <span class="star" data-value="1">&#9734;</span>
+            <span class="star" data-value="2">&#9734;</span>
+            <span class="star" data-value="3">&#9734;</span>
+            <span class="star" data-value="4">&#9734;</span>
+            <span class="star" data-value="5">&#9734;</span>
+        </div>
+        <button id="submit-feedback" class="btn">Submit</button>
+    </div>
+
+    <!-- Feedback Success Message -->
+    <div id="feedback-success">Feedback sent successfully!</div>
+
+    <script>
+        const feedbackBtn = document.getElementById('feedback-btn');
+        const feedbackForm = document.getElementById('feedback-form');
+        const feedbackText = document.getElementById('feedback-text');
+        const feedbackSuccess = document.getElementById('feedback-success');
+        const submitFeedbackBtn = document.getElementById('submit-feedback');
+        let isFeedbackOpen = false;
+    
+        // Feedback button toggle behavior
+        feedbackBtn.addEventListener('click', function() {
+            if (isFeedbackOpen) {
+                feedbackForm.style.display = 'none';
+                feedbackText.value = ''; // Reset the feedback text
+                stars.forEach(s => s.innerHTML = '&#9734;'); // Reset stars to empty
+                selectedRating = 0; // Reset rating
+            } else {
+                feedbackForm.style.display = 'block';
+            }
+            isFeedbackOpen = !isFeedbackOpen;
+        });
+    
+        let selectedRating = 0; // No default rating
+        const stars = document.querySelectorAll('#rating .star');
+        stars.forEach(star => {
+            star.addEventListener('click', function() {
+                selectedRating = parseInt(this.getAttribute('data-value')); // Ensure selectedRating is a number
+                // Update star visuals
+                stars.forEach(s => s.innerHTML = '&#9734;'); // Empty stars
+                for (let i = 0; i < selectedRating; i++) {
+                    stars[i].innerHTML = '&#9733;'; // Filled stars
+                }
+    
+                console.log("Selected rating:", selectedRating); // Log the rating to the console
+            });
+        });
+    
+        submitFeedbackBtn.addEventListener('click', function() {
+            const feedbackTextValue = feedbackText.value;
+    
+            // Close the feedback form immediately
+            feedbackForm.style.display = 'none';
+            isFeedbackOpen = false;
+    
+            // Show the success message
+            feedbackSuccess.style.display = 'block';
+            setTimeout(function() {
+                feedbackSuccess.style.display = 'none';
+            }, 1000); // Hide success message after 1 second
+    
+            // Send feedback to the server asynchronously (without blocking the form)
+            fetch('/submit_feedback', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    feedback: feedbackTextValue,
+                    rating: selectedRating // Ensure correct rating is sent
+                })
+            }).then(response => response.json()).then(data => {
+                console.log('Feedback submitted:', data);
+    
+                // Only reset form inputs after the feedback is submitted
+                feedbackText.value = '';
+                stars.forEach(s => s.innerHTML = '&#9734;'); // Reset stars to empty
+                selectedRating = 0; // Reset rating
+            }).catch(error => {
+                console.error('Error submitting feedback:', error);
+            });
+        });
+    </script>    
 </body>
 </html>

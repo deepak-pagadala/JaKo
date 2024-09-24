@@ -1,4 +1,5 @@
 from flask import Flask, render_template, jsonify, request
+from flask_mail import Mail, Message
 import json
 import random
 import urllib.parse
@@ -8,6 +9,16 @@ app = Flask(__name__)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
+
+# Email configuration (using Gmail SMTP)
+app.config['MAIL_SERVER'] = 'smtp.gmail.com'
+app.config['MAIL_PORT'] = 587
+app.config['MAIL_USE_TLS'] = True
+app.config['MAIL_USERNAME'] = 'rileydr308@gmail.com'  # Your Gmail address
+app.config['MAIL_PASSWORD'] = 'ghgg pnvg hhgq vglu'  # Your Gmail password (or app-specific password)
+app.config['MAIL_DEFAULT_SENDER'] = 'rileydr308@gmail.com'  # Set sender email
+
+mail = Mail(app)
 
 with open('vocabularies/japanese.json', 'r', encoding='utf-8') as f:
     japanese_vocab = json.load(f)
@@ -87,5 +98,31 @@ def get_word(language, category):
         app.logger.error(f"Error in get_word: {e}")
         return "An error occurred", 500
 
+
+# Feedback submission route
+@app.route('/submit_feedback', methods=['POST'])
+def submit_feedback():
+    try:
+        data = request.get_json()
+        feedback = data.get('feedback', '')
+        rating = data.get('rating', 3)
+
+        logging.info(f"Received feedback: {feedback}")
+        logging.info(f"Rating: {rating}")
+
+        # Compose the email
+        msg = Message(subject="New Feedback from JaKo",
+                      recipients=['ndeepak.p01@gmail.com'])  # Your business email
+        msg.body = f"User feedback: {feedback}\nRating: {rating}/5"
+
+        # Send the email
+        mail.send(msg)
+
+        return jsonify({'message': 'Feedback submitted successfully'}), 200
+    except Exception as e:
+        logging.error(f"Error submitting feedback: {e}")
+        return jsonify({'message': 'Failed to submit feedback'}), 500
+
 if __name__ == '__main__':
     app.run(debug=True)
+
