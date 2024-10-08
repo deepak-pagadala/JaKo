@@ -38,6 +38,21 @@ def language():
 def category(language):
     return render_template('category.html', language=language)
 
+@app.route('/subcategories/<language>/<category>')
+def subcategories(language, category):
+    """
+    Render the subcategories page for special categories like 'Alphabets' in Japanese.
+    """
+    try:
+        if language == 'japanese' and category == 'Alphabets':
+            return render_template('subcategories.html')
+        else:
+            # If it's not a special category, redirect to the main category page
+            return render_template('category.html', language=language)
+    except Exception as e:
+        app.logger.error(f"Error in subcategories: {e}")
+        return "An error occurred", 500
+
 @app.route('/mode/<language>/<category>')
 def mode_selection(language, category):
     try:
@@ -112,7 +127,7 @@ def submit_feedback():
 
         # Compose the email
         msg = Message(subject="New Feedback from JaKo",
-                      recipients=['jako.type@gmail.com'])  # Your business email
+                      recipients=['ndeepak.p01@gmail.com'])  # Your business email
         msg.body = f"User feedback: {feedback}\nRating: {rating}/5"
 
         # Send the email

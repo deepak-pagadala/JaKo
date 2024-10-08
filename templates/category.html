@@ -11,6 +11,11 @@
     <div class="container">
         <h1 style="color: white;">Select a Category for {{ language|capitalize }}</h1>
         <div class="category-buttons">
+            {% if language == 'japanese' %}
+                <a href="/subcategories/japanese/Alphabets" class="btn">Alphabets</a> <!-- Direct to subcategories page -->
+            {% else %}
+                <a href="/mode/{{ language }}/Hangul" class="btn">Alphabets</a> <!-- Direct to rules for Hangul in Korean -->
+            {% endif %}
             <a href="/mode/{{ language }}/Basic%20Phrases%20and%20Greetings" class="btn">Basic Phrases and Greetings</a>
             <a href="/mode/{{ language }}/Numbers" class="btn">Numbers</a>
             <a href="/mode/{{ language }}/Days%20of%20the%20Week" class="btn">Days of the Week</a>
