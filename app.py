@@ -119,16 +119,21 @@ def get_word(language, category):
 def submit_feedback():
     try:
         data = request.get_json()
+        email = data.get('email', '')  # Retrieve the user's email
         feedback = data.get('feedback', '')
         rating = data.get('rating', 3)
 
         logging.info(f"Received feedback: {feedback}")
         logging.info(f"Rating: {rating}")
+        logging.info(f"User email: {email}")
 
         # Compose the email
-        msg = Message(subject="New Feedback from JaKo",
-                      recipients=['ndeepak.p01@gmail.com'])  # Your business email
-        msg.body = f"User feedback: {feedback}\nRating: {rating}/5"
+        msg = Message(
+            subject="New Feedback from JaKo",
+            recipients=['jako.type@gmail.com'],  # Your business email
+            reply_to=email  # Set reply-to as the user's email
+        )
+        msg.body = f"User feedback: {feedback}\nRating: {rating}/5\nUser Email: {email}"
 
         # Send the email
         mail.send(msg)
@@ -140,4 +145,3 @@ def submit_feedback():
 
 if __name__ == '__main__':
     app.run(debug=True)
-
